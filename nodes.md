@@ -695,3 +695,436 @@ Entender as principais diferenças entre structs e classes.
 Esses são os fundamentos para criar qualquer aplicativo iOS.
 
 Nos vemos na próxima aula!
+
+@02-Heranca e Polimorfismo
+
+@@01
+Projeto da aula anterior
+
+Foi criado um playground com exemplos similares ao que vimos na aula anterior. Você pode ir acompanhando o passo a passo do desenvolvimento do nosso código no Github e, caso deseje, pode baixar o código da aula anterior.
+Observação: o código fica dentro do arquivo “Contents.swift”, dentro de cada pasta do Playground.
+Bons estudos!
+
+https://github.com/alura-cursos/swift-orientacao-a-objetos/tree/aula-01
+
+https://github.com/alura-cursos/swift-orientacao-a-objetos/archive/refs/heads/aula-01.zip
+
+@@02
+Herança
+
+Você já entendeu as principais diferenças entre Classes e Structs. Eu disse que as Classes têm uma funcionalidade extra, a Herança.
+Mas o que isso significa? No contexto de aplicativo de banco, imagine que você precisa implementar uma nova Classe chamada "Conta Poupança". Ela possui um método específico chamado "solicitar cartão de débito".
+
+Na classe Conta Corrente, temos a tarefa de implementar o método "solicitar empréstimo", que não está disponível para a Conta Poupança. Do mesmo modo, a Conta Corrente não possui o método "solicitar cartão de débito".
+
+Sabemos que, em uma conta corrente, também é possível solicitar um cartão de débito, mas manteremos dessa forma para fins de aprendizado. Ambas possuem atributos de saldo, nome e os métodos "Sacar" e "Depositar".
+
+Pensando nisso, será que precisamos criar as duas classes e reescrever todos os métodos e atributos em comum? Será que não existe uma maneira mais eficiente para fazermos isso?
+
+Existe, sim! É aí que entra o conceito de Herança: podemos ter uma "classe pai", com os atributos e métodos, e podemos criar as "classes filhas", que herdarão estes atributos e métodos da primeira classe.
+
+Vamos ao código para entender isso, na prática.
+
+Criarei uma classe chamada Conta que terá o atributo saldo iniciado em 0.0. Também criarei o atributo nome do tipo string, os métodos de sacar(), passando o valor decimal como parâmetro.
+
+Na linha 6, definirei o saldo -= valor, para realizar o saque. Na linha 9, criarei o método depositar(), tendo como parâmetro o valor decimal. Na linha seguinte, escreverei saldo += valor.
+
+Preciso criar também o inicializador init(), passando o nome do tipo string como parâmetro. Dentro das chaves, escrevemos self.nome = nome.
+
+class Conta {
+
+    func sacar(_ valor: Double) {
+        saldo -= valor
+    }
+
+    func depositar(_ valor: Double) {
+        saldo += valor
+    }
+
+    init(nome: String) {
+        self.nome = nome
+    }
+}COPIAR CÓDIGO
+Executarei o código e nada acontecerá porque ainda não instanciamos a classe. Agora, precisamos criar uma classe Poupança que herde a partir da classe Conta.
+
+Podemos fazer isso escrevendo class ContaPoupanca: Conta. Assim, a classe ContaPoupanca herdará todos os métodos e atributos da classe Conta.
+
+class ContaPoupanca: Conta {
+
+}COPIAR CÓDIGO
+Para provar isso, instanciarei a classe ContaPoupanca. Criarie uma variável chamada contaPoupanca e vou instanciar a ContaPoupanca, passando o nome como parâmetro.
+
+Agora, depositarei um valor de R$ 50,00. Perceba que já estamos usando métodos da classe pai, porque a classe Poupança que se encontra entre as linhas 18 e 20 não tem nenhum método depositar, mas ela herda os métodos da classe Conta.
+
+Por fim, exibiremos no console o saldo da conta poupança:
+
+class ContaPoupanca: Conta {
+
+}
+
+var contaPoupanca = ContaPoupanca(nome: "Giovanna")
+contaPoupanca.depositar(50)
+print(contaPoupanca.saldo)COPIAR CÓDIGO
+Se executarmos o código acima, o console mostrará o valor de "50.0".
+
+Pulando uma linha, podemos criar outra classe, chamada ContaCorrente. Ela também herdará os atributos e os métodos de Conta.
+
+Perceba que teremos o mesmo comportamento da Conta Poupança: declararemos uma variável chamada contaCorrente e instanciaremos a ContaCorrente, passando o nome "Ana" como parâmetro.
+
+Também podemos usar os métodos e atributos da classe Conta. Então, depositaremos um valor de R$ 100,00 e exibiremos o saldo da conta corrente no console.
+
+class ContaCorrente: Conta {
+
+}
+
+var contaCorrente = ContaCorrente(nome: "Ana")
+contaCorrente.depositar(100)
+print(contaCorrente.saldo)COPIAR CÓDIGO
+Ao executar o código, observaremos no console que o saldo da conta é de R$ 100,00.
+
+Além daquilo que é herdado da classe pai, podemos ter atributos e métodos específicos em cada classe filha. Na linha 19, na classe Conta Poupança, simplesmente escreverei uma função chamada solicitarDebito() e exibirei no console a frase "O cliente está solicitando cartão débito".
+
+Além disso, podemos criar atributos dessa própria classe. Por isso, declararei um atributo possuiCartaoDebito, que corresponderá a uma variável booleana. Ela será iniciada como falsa.
+
+No método solicitarDebito(), escreverei possuiCartaoDebito = true. Com isso, estamos apenas manipulando um atributo.
+
+
+class ContaPoupanca: Conta {
+    var possuiCartaoDebito = false
+    func solicitarDebito() {
+        possuiCartaoDebito = true
+        print("O cliente está solicitando cartão débito")
+    }
+}COPIAR CÓDIGO
+Na linha 29, escreveremos contaPoupanca.solicitarDebito() e executaremos o código. Com isso, o console exibirá a mensagem "O cliente está solicitando cartão débito".
+
+Esse método não está disponível na conta corrente. Se tentarmos escrever na linha 38 contaCorrente.solicitarDebito(), perceberemos que o Xcode não nos mostra nenhuma sugestão de método. Isso acontece porque este método pertence apenas à conta poupança.
+
+Dentro da classe ContaCorrente, escreveremos o método solicitarEmprestimo(), recebendo como parâmetro um valor do tipo Double. Dentro do escopo dessa função, escreveremos no console "O cliente está solicitando um empréstimo no valor de \(valor)". O trecho \() permite que coloquemos uma variável dentro da string.
+
+class ContaCorrente: Conta {
+    func solicitarEmprestimo(_ valor: Double) {
+        print("O cliente está solicitando um empréstimo no valor de \(valor)")
+    }
+}COPIAR CÓDIGO
+Não criarei nenhum atributo aqui, mas você poderia fazer isso.
+
+Na linha 40, escreverei contaCorrente.solicitarEmprestimo(20000). Se executarmos o código, o console exibirá a mensagem "O cliente está solicitando um empréstimo no valor de 20000.00".
+
+Essa característica de herança entre classes é muito utilizada no mundo de orientação a objetos. Ela é uma funcionalidade específica de classes na linguagem Swift.
+
+Os Structs não têm a funcionalidade de herança. Esse é um motivo para usar a classes em vez de structs: herdar atributos e métodos de uma classe pai (ou superclasse) para uma ou mais classes filhas (as subclasses).
+
+Eu te espero no próximo vídeo!
+
+@@03
+Para saber mais: como prevenir uma classe de ser herdada?
+
+Você sabia que há uma maneira de fazer com que uma classe não seja herdada por outra?
+Para impedir uma classe de herdar outra, você precisa apenas adicionar a palavra-chave final antes de class. Veja um exemplo abaixo:
+
+final class Pessoa {}
+
+// class Estudante: Pessoa {} -> Erro! Pessoa não pode ser herdada
+
+@@04
+Super
+
+Você já aprendeu sobre heranças e continuaremos falando desse assunto neste vídeo.
+Imagine que você precisa chamar um método da classe pai na classe filho. Por exemplo, na classe ContaCorrente, dentro da função solicitarEmprestimo(), podemos chamar um método da classe pai para depositar o valor que estamos solicitando por meio de empréstimo.
+
+Eu sei que não é exatamente assim que funciona, mas trabalharemos dessa forma. Para chamar o método da classe pai, podemos usar a palavra super, usada quando fazemos referência à classe pai.
+
+Na linha 34, escreveremos super.depositar(valor). Já na linha 40, exibiremos contaCorrente.saldo no console para verificarmos o valor do saldo.
+
+// Trecho de código suprimido
+
+super.depositar(Valor)
+
+// Trecho de código suprimido
+
+print(contaCorrente.saldo)
+COPIAR CÓDIGO
+Observe no console que o nosso saldo atual é de R$ 20.100,00, porque depositamos R$ 100,00, instanciando a classe contaCorrente e solicitamos um empréstimo de R$ 20.000,00, chamando o método depositar da classe pai.
+
+Na classe Poupança, inicializamos o atributo possuiCartaoDebito como falso em um primeiro momento, mas imagine que gostaríamos de receber esse parâmetro de forma customizada, ou seja, precisamos passar um parâmetro por meio do inicializador.
+
+Como podemos fazer isso em uma classe filha? Para isso, apagaremos a inicialização da variável possuiCartaoDebito em falso e escreverei o tipo de forma explícita (Bool).
+
+class ContaPoupanca: Conta {
+    var possuiCartaoDebito: Bool
+
+// Trecho de código suprimidoCOPIAR CÓDIGO
+Se executarmos este código, obteremos um erro indicando que a classe ContaPoupanca não possui nenhum inicializador.
+
+Pularemos uma linha após a função solicitarDebito() e criaremos o nosso construtor recebendo possuiCartaoDebito enquanto parâmetro.
+
+init(possuiCartaoDebito: Bool) {
+    self.possuiCartaoDebito = possuiCartaoDebitoCOPIAR CÓDIGO
+Se executarmos o código, obteremos outro erro, porque não passamos como parâmetro da conta poupança o atributo possuiCartaoDebito. Assim, adicionaremos uma vírgula dentro dos parênteses de ContaPoupanca e escreveremos possuiCartaoDebito: false.
+
+var contaPoupanca = ContaPoupanca(nome: "Giovanna", possuiCartaoDebito: false)COPIAR CÓDIGO
+Ao executar este código, obteremos um erro indicando que há um argumento extra chamado "nome". Se a minha classe ContaPoupanca é filha da classe Conta e esta recebe no inicializador um nome do tipo string, a classe Poupança também precisa receber um nome do tipo string.
+
+Porém, como sobrescrevemos o inicializador da conta poupança e estamos recebendo apenas o parâmetro possuiCartaoDebito, isso não está acontecendo, ou seja, não estamos recebendo o nome.
+
+Para corrigir isso, reescreveremos os parâmetros do inicializador: init(nome: String, possuiCartaoDebito: Bool). Acontece que não temos um atributo nome na classe ContaPoupanca, mas só na classe Conta.
+
+Nesse caso, precisamos chamar o inicializador da classe pai. Faremos isso após o self.possuiCartaoDebito, na linha 27. Assim, chamaremos o inicializador da classe pai na linha 28 do código usando o super.
+
+Escreveremos super.init() e, ao pressionar a tecla "Enter", os parênteses serão preenchidos automaticamente com o parâmetro nome: String. Substituiremos o String pelo nome que recebemos no nosso inicializador da classe da Conta Poupança:
+
+super.init(nome: nome)COPIAR CÓDIGO
+Se executarmos este código, observaremos que não encontramos nenhum erro e tudo funciona conforme o esperado.
+
+Recapitulando: já que escrevemos novamente o inicializador em uma classe filha, precisamos receber nos parâmetros de uma classe pai e, em seguida, chamar o inicializador desta usando o super.init com o parâmetro necessário, ou seja, nome.
+
+Na linha 13, perceba que temos o inicializador recebendo um nome. Este é o inicializador da nossa classe pai.
+
+Neste vídeo, aprendemos a chamar métodos da classe pai em uma classe filha. Te vejo daqui a pouco!
+
+@@05
+Override
+
+Agora, imagine que precisamos aplicar taxas ao método de saque.
+É muito comum irmos ao banco e precisarmos pagar uma taxa para fazer o saque no caixa eletrônico. Imagine que, se a pessoa tem uma conta corrente, a taxa de saque é R$ 5,00. Se ela tiver uma conta poupança, a taxa de saque é de R$ 10,00.
+
+Como podemos representar isso com código? Precisaremos sobrescrever os métodos sacar nas classes filhas, mas como fazemos isso? Usaremos a palavra override, que significa sobrescrever.
+
+Na nossa classe ContaPoupanca, logo após a função solicitarDebito(), pularemos uma linha e escreveremos uma função para saque, mas a sobrescreveremos a partir do método sacar da classe pai. Escreveremos override func sacar.
+
+Se pressionarmos a tecla "Enter", os parâmetros serão preenchidos automaticamente.
+
+override func sacar(_ valor: Double) {
+
+}COPIAR CÓDIGO
+Basta escrevermos o código agora. Lembrando que, se for uma conta poupança, a taxa é de R$ 10,00 para saque. Podemos escrever saldo -= valor + 10, pois estamos somando o valor de R$ 10,00. Se executarmos o código, nada acontecerá porque não estamos usando o método sacar.
+
+Na linha 37, depositamos R$ 50,00. Na linha seguinte, sacaremos R$ 20,00:
+
+contaPoupanca.sacar(20)COPIAR CÓDIGO
+Executarei o código já na linha 39 para recebermos menos coisas no console. Observe que, ao executá-lo, o console exibe o saldo de "20.0". Isso acontece porque depositamos R$ 50,00, sacamos R$ 20,00, mas tivemos que pagar um valor de R$ 10,00 em taxas pelo saque. Com isso, sobrescrevemos o método da classe pai.
+
+Faremos o mesmo para a conta corrente. Logo após a função solicitarEmprestimo(), sobrescreveremos o método sacar e pressionaremos a tecla "Enter" para as informações de parâmetros serem preenchidas automaticamente.
+
+Dentro do método, escreveremos saldo -= valor + 5, sendo que R$ 5,00 é a taxa da conta corrente para saque.
+
+override func sacar(_ valor: Double) {
+    saldo -= valor + 5
+}COPIAR CÓDIGO
+Logo após depositarmos o valor de R$ 100,00 na conta corrente, sacaremos R$ 20,00 para fazer o teste.
+
+var contaCorrente = ContaCorrente(nome: "Ana")
+contaCorrente.depositar(100)
+contaCorrente.sacar(20)
+print(contaCorrente.saldo)
+contaCorrente.solicitarEmprestimo(20000)
+print(contaCorrente.saldo)COPIAR CÓDIGO
+Exibindo o saldo no console, obteremos o valor de R$ 75,00, pois a taxa de R$ 5,00 também foi subtraída da operação.
+
+Essa é uma característica importante da orientação a objetos: sobrescrever métodos da classe pai em uma classe filha. Agora que você já aprendeu sobre o override, é hora de avançarmos nos nossos estudos. Te vejo em breve!
+
+@@06
+Herança
+
+Você aprendeu sobre herança e o uso do super/override em classes filhas.
+Analise o código, prestando atenção nas duas classes e o que uma herda da outra:
+
+class Carro {
+  var modelo: String
+  var marca: String
+  var ano: Int
+
+  init(modelo: String, marca: String, ano: Int) {
+      self.modelo = modelo
+      self.marca = marca
+      self.ano = ano
+    }
+}
+
+class Ford: Carro {
+  var tipoCombustivel: String
+  init(modelo: String, ano: Int, tipoCombustivel: String) {
+    self.tipoCombustivel = tipoCombustivel
+    super.init(modelo: modelo, marca: "Ford", ano: ano)
+  }
+
+    func alteraTipoCombustivel(novoTipo: String) {
+    self.tipoCombustivel = novoTipo
+  }
+}
+
+let fiesta = Ford(modelo: "Fiesta", ano: 2014, tipoCombustivel: "Etanol")
+fiesta.alteraTipoCombustivel(novoTipo: "Gasolina")COPIAR CÓDIGO
+A partir do que observou, assinale a alternativa correta:
+
+O código contém um erro, pois, ao alterar um atributo da classe com a função alteraTipoCombustivel(), a instância precisa ser definida com o uso de var em vez de let.
+ 
+Alternativa correta
+O código contém um erro. A classe “Ford”, por ser extendida de “Carro”, não pode obter atributos diferentes da sua classe pai.
+ 
+Alternativa correta
+O código contém um erro, já que o super.init() precisa ser chamado antes de inicializar as variáveis da classe filha.
+ 
+Alternativa correta
+A classe está definida e instanciada de maneira correta.
+ 
+A classe “Ford” possui um atributo exclusivo, que é o tipoCombustivel e usa do super para inicializar os outros atributos da classe pai.
+
+@@07
+Polimorfismo e Typecasting
+
+Uma classe Corrente é uma classe filha, derivada da classe pai Conta. Pelo fato de ela derivar de uma classe Conta, é possível usar uma instância da conta corrente ou da poupança em qualquer função que recebe uma instância do tipo Conta.
+Para entendermos melhor, vamos à prática:
+
+Descerei até o fim do código e criarei uma função solta, fora de qualquer classe, chamada exibeSaldoDaConta(). Passaremos como parâmetro um objeto do tipo Conta.
+
+Atenção: o objeto será apenas Conta, sem ser conta poupança nem corrente.
+Dentro do escopo da função, exibiremos no console o saldo da conta (print(conta.saldo)).
+
+func exibeSaldoDaConta(_ conta: Conta) {
+    print(conta.saldo)
+}COPIAR CÓDIGO
+Perceba que ele recebe um objeto do tipo conta, mas tanto a conta corrente quanto a poupança também são contas. Por isso, se chamaremos a função exibeSaldoDaConta, passando contaCorrente como parâmetro, e executar o código, o console exibe o saldo da conta corrente (R$ 2.075,00).
+
+O mesmo acontece com a conta poupança. Se usarmos a função exibeSaldoDaConta passando a instância da contaPoupanca, também teremos no console o seu saldo de R$ 20,00.
+
+Isso ocorre porque contaCorrente e contaPoupanca serem classes filhas da classe pai Conta. Assim, elas também se comportam como Conta. Esse comportamento é chamado de Polimorfismo.
+
+O que é o polimorfismo?
+Polimorfismo é a habilidade de tratar os objetos de maneira diferente a depender do contexto em que estão inseridos.
+No exemplo acima, recebemos um objeto do tipo Conta. contaCorrente e contaPoupanca também são objetos desse tipo. Por isso, podemos tratá-los como uma Conta.
+
+Podemos também fazer verificações para descobrir se a instância é do tipo Conta, contaCorrente ou contaPoupanca. Como fazemos isso? A primeira maneira é usando a palavra is.
+
+Na função exibeSaldoDaConta, excluiremos a linha que indica a exibição do saldo no console e faremos uma verificação, escrevendo if conta is ContaCorrente. Abriremos chaves e pediremos ao console para exibir a seguinte frase "Conta é do tipo conta corrente".
+
+Executando o código, podemos observar que a mensagem surgiu no console apenas uma vez. Nesse caso, não recebemos nenhuma mensagem se a conta for do tipo poupança. Porém, o problema com essa abordagem é que ela não permite que acessemos atributos nem métodos da classe contaCorrente.
+
+Após a linha que imprime a mensagem no console, chamaremos o método solicitarEmprestimo da contaCorrente. Perceba que o autocomplete não aparece. Se executarmos esse código, receberemos um erro indicando que o tipo Conta não possui nenhum método chamado solicitarEmprestimo.
+
+Fizemos uma verificação para saber se a conta é do tipo corrente, mas ela não nos permite acessar atributos nem métodos da classe específica. Precisamos usar outra verificação para isso, a Type Casting, cujo operador é as?.
+
+Apagaremos a linha que está causando o erro e escreveremos, logo após o primeiro if:
+
+if let contaCorrente = conta as? ContaCorrente {
+
+}COPIAR CÓDIGO
+Lembre-se que o let é uma maneira de desembrulharmos uma opcional. O as? retorna uma opcional. Então, ele está verificando se a conta passada como parâmetro da função exibeSaldoDaConta é corrente. Se for, podemos escrever qualquer código dentro do if let.
+
+Chamaremos o méotdo da conta corrente solicitarEmprestimo. Neste caso, o autocomplete aparece, pois ele consegue identificar os atributos e métodos desta classe em questão. Passaremos um valor qualquer, 200.
+
+func exibeSaldoDaConta(_ conta: Conta) {
+    if conta is ContaCorrente {
+        print("Conta é do tipo conta corrente")
+    }
+
+    if let contaCorrente = conta as? ContaCorrente {
+        contaCorrente.solicitarEmprestimo(200)
+    }
+}COPIAR CÓDIGO
+Executando o código, perceberemos que ele chamou o método da classe da conta corrente, exibindo a mensagem "O cliente está solicitando um empréstimo no valor de 200.0".
+
+Existem outras maneiras de desembrulhar também. Podemos usar:
+
+`guard let contaPoupanca = conta as? ContaPoupanca else {
+    return }
+print(ContaPoupanca.possuiCartaoDebito)COPIAR CÓDIGO
+Caso a conta não seja do tipo poupança, ele simplesmente sairá da função. Observe que ele também consegue pegar o atributo possuiCartaoDebito, que é específico da ContaPoupanca. Executando o código, obtemos um true no console, o que significa que a conta tem um cartão de débito.
+
+Estamos tratando de opcionais porque o as? nos retorna um opcional. Porém, podemos forçar o desembrulho também. Fazemos isso declarando uma variável chamada contaCorrente2, apenas para simular.
+
+var contaCorrente2 = conta as! ContaCorrente
+contaCorrente2.solicitarEmprestimo(100)
+COPIAR CÓDIGO
+Colocaremos um ponto de exclamação (!) depois de as, para forçar o desembrulho. Mas, ao executar o código, obteremos outro erro. Isso acontece porque, quando passamos contaPoupanca, não se trata de uma conta corrente: estamos forçando o desembrulho de uma opcional que, na verdade, é nula.
+
+Isso não é recomendado em nenhum momento. Por isso, excluiremos essas duas últimas linhas do nosso código. Até aqui, você aprendeu a identificar os tipos de determinada classe e as características do polimorfismo. Te vejo em breve!
+
+@@08
+Desafios
+
+agora que você já entendeu sobre herança, polimorfismo e typecasting, vamos partir para os desafios propostos dessa aula envolvendo situações do mundo real.
+É bastante importante que você pratique os três desafios, pois são essenciais ao seu aprendizado.
+
+Vamos lá?
+
+Desafio 1 - Registrando o empregado e gerente
+Vamos simular uma situação de cadastro de funcionários!
+
+Crie uma classe Empregado que possuirá os seguintes atributos:
+A. Nome (String);
+B. Salário (Double).
+Crie uma classe filha de Empregado, a Gerente. Afinal de contas, gerente é um tipo de empregado.
+Na classe “Gerente”, adicione como atributo “departamento”, que deve ser uma String que diga a qual departamento o gerente pertence. Lembre de usar o super.init() para inicializar os atributos da classe pai.
+Desafio 2 - Calculando o salário do vendedor
+Agora, com base no desafio anterior, vamos aprofundar!
+
+Crie uma outra classe filha chamada Vendedor.
+Faça um método chamado percentualComissao, que recebe como parâmetro o número de vendas que o vendedor realizou. Cada vendedor possui uma comissão de 10% sobre cada venda. Essa comissão é adicionada ao salário final. Retorne o valor final que o vendedor irá receber, supondo que cada venda possui um valor de R$50,00.
+Desafio 3 - Verificando tipos
+Ainda com base no desafio anterior, vamos verificar os tipos de “Empregado”, se a instância é do tipo “Gerente” ou “Vendedor”.
+
+Crie uma função chamada verificaTipo que recebe, como parâmetro, uma instância do tipo Empregado;
+Faça o uso do typecasting para verificar se a instância é um gerente, vendedor ou apenas um outro empregado;
+Mostre no console o nome do empregado e a sua função. Caso o empregado for um gerente, mostre seu departamento também. O resultado final será parecido com esse:
+“O(a) empregado(a) Felipe é um(a) gerente e está no departamento RH.”
+“O(a) empregado(a) Daniel é um(a) vendedor.”
+Vamos lá?
+
+Opinião do instrutor
+
+No desafio 1, você pode ter desenvolvido algo como:
+class Empregado {
+  var nome: String
+  var salario: Double
+
+  init(nome: String, salario: Double) {
+    self.nome = nome
+    self.salario = salario
+  }
+}
+
+class Gerente: Empregado {
+  var departamento: String
+  init(nome: String, salario: Double, departamento: String) {
+    self.departamento = departamento
+    super.init(nome: nome, salario: salario)
+  }
+}
+COPIAR CÓDIGO
+Enquanto no desafio 2, eu cheguei nessa conclusão:
+
+class Vendedor: Empregado {
+  func percentualComissao(_ numeroVendas: Int) -> Double {
+    return (0.1 * 50.0 * Double(numeroVendas)) + self.salario
+  }
+}COPIAR CÓDIGO
+E por fim, no desafio 3, cheguei nesse resultado:
+
+func verificaTipo(_ empregado: Empregado) {
+  if let gerente = empregado as? Gerente {
+    print("O(a) empregado(a) \(gerente.nome) é um(a) gerente e está no departamento \(gerente.departamento).")
+  } else if let vendedor = empregado as? Vendedor {
+    print("O(a) empregado(a) \(vendedor.nome) é um(a) vendedor(a).")
+  } else {
+    print("O(a) empregado(a) \(empregado.nome) é de um outro tipo.")
+  }
+}
+
+let vendedor = Vendedor(nome: "Daniel", salario: 2300)
+let gerente = Gerente(nome: "Felipe", salario: 4000, departamento: "RH")
+verificaTipo(vendedor)
+verificaTipo(gerente)COPIAR CÓDIGO
+Observação: não se preocupe se seu código ficou muito diferente do meu, existem diversas maneiras de chegar em um mesmo resultado. Apenas certifique-se de que você está escrevendo um código legível, com nomes bem definidos, etc.
+
+@@09
+O que aprendemos?
+
+Nessa aula, você aprendeu como:
+Utilizar o conceito de herança aplicadas em classes;
+Chamar métodos da classe pai com o uso do super;
+Sobreescrever métodos da classe pai com o uso do override;
+Aplicar o conceito de polimorfismo;
+Realizar verificações de tipos com o uso do typecasting.
+Finalizamos a aula 2! Espero você na próxima aula.
