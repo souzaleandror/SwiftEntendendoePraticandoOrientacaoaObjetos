@@ -1128,3 +1128,612 @@ Sobreescrever métodos da classe pai com o uso do override;
 Aplicar o conceito de polimorfismo;
 Realizar verificações de tipos com o uso do typecasting.
 Finalizamos a aula 2! Espero você na próxima aula.
+
+#### 16/07/2023
+
+@03-Propriedades
+
+@@01
+Projeto da aula anterior
+
+Foi criado um playground com exemplos similares ao que vimos na aula anterior. Você pode ir acompanhando o passo a passo do desenvolvimento do nosso código no Github e, caso deseje, pode baixar o código da aula anterior.
+Observação: o código fica dentro do arquivo “Contents.swift”, dentro de cada pasta do Playground.
+Bons estudos!
+
+https://github.com/alura-cursos/swift-orientacao-a-objetos/tree/aula-02
+
+https://github.com/alura-cursos/swift-orientacao-a-objetos/archive/refs/heads/aula-02.zip
+
+@@02
+Propriedades armazenadas, computadas e estáticas
+
+Nesta aula, exploraremos mais sobre propriedades ou atributos de uma classe e de uma struct. Há alguns tipos de propriedades, dentre elas, temos:
+Propriedade Armazenada
+Propriedade Computada
+Propriedade Estática
+A primeira, a propriedade armazenada é uma propriedade comum.
+
+MyPlayground
+class Conta {
+    var saldo = 0.0
+    var nome: String
+
+    func sacar(_ valor: Double) {
+        saldo -= valor
+    }
+
+    func depositar(_ valor: Double) {
+        saldo += valor
+    }
+
+    init(nome: String) {
+        self.nome = nome
+    }
+}COPIAR CÓDIGO
+Por exemplo, o atributo saldo é uma propriedade armazenada, pertencendo a uma classe ou struct, e possui algum valor. O atributo nome também é uma propriedade armazenada, dado que está armazenando algum valor.
+
+Em alguns cenários, desejamos calcular algum valor a partir de alguma propriedade. Vamos supor que precisamos calcular se um usuário está negativado, ou seja, se possui um saldo inferior a zero.
+
+Em um primeiro momento, podemos pensar: "Vou criar o método chamado de VerificaNegativado, e vou retornar um valor booleano para saber se está negativado ou não".
+
+Contudo, há outra maneira de aplicarmos essa lógica: podemos realizar cálculos através das propriedades computadas. Estas, são bem interessantes e vamos declará-las no nosso código.
+
+No arquivo MyPlayground, abaixo na variável nome, criaremos outra variável chamada de negativado.
+
+var negativadoCOPIAR CÓDIGO
+As propriedades computadas precisam ter o seu tipo declarado de forma explícita.
+Na sequência, acrescentamos dois pontos (":") e o tipo, que será booleano e depois abrimos e fechamos chaves.
+
+var negativado: Bool {
+
+}COPIAR CÓDIGO
+Dentro das chaves, vamos refazer o cálculo e passaremos qual o valor dessa propriedade. E qual é o valor? Desejamos saber se o saldo é menor que zero, portanto, daremos um return saldo < 0 (retorna o saldo menor do que zero).
+
+var negativado: Bool {
+        return saldo < 0
+}COPIAR CÓDIGO
+Ele irá retornar para essa propriedade negativado.
+
+MyPlayground
+class Conta {
+    var saldo = 0.0
+    var nome: String
+
+    var negativado: Bool {
+        return saldo < 0
+    }
+
+    func sacar(_ valor: Double) {
+        saldo -= valor
+    }
+
+    func depositar(_ valor: Double) {
+        saldo += valor
+    }
+
+    init(nome: String) {
+        self.nome = nome
+    }
+}COPIAR CÓDIGO
+Vamos executar o código, clicando no botão com o ícone de play "▶", do lado esquerdo na última linha do código. Não vai acontecer nada, dado que temos somente uma classe.
+
+Mas agora vamos instanciar um objeto no final do arquivo. Após o último fechar de chaves, criaremos a variável chamada de contaGiovanna (ou um nome que preferir), inicializando a conta (= Conta(nome: "Giovanna")) passando o nome para o inicializador.
+
+MyPlayground
+//código omitido
+
+    init(nome: String) {
+        self.nome = nome
+    }
+}
+
+var contaGiovanna = Conta(nome: "Giovanna")COPIAR CÓDIGO
+Em seguida, vamos sacar um valor. Observe que o saldo inicial é zero, e se sacarmos R$20, ficamos com - R$20. Para isso, pegamos a variável contaGiovanna e na sequência passamos o método sacar() passando R20.
+
+var contaGiovanna = Conta(nome: "Giovanna")
+contaGiovanna.sacar(20)COPIAR CÓDIGO
+Então, exibiremos no console a conta da Giovanna negativada.
+
+var contaGiovanna = Conta(nome: "Giovanna")
+contaGiovanna.sacar(20)
+print(contaGiovanna.negativado)COPIAR CÓDIGO
+Ao clicarmos no botão "▶", temos como retorno no console:
+
+true
+Ou seja, o valor dessa propriedade é verdadeiro, sendo uma propriedade computada.
+
+Agora depositaremos R$100 e verificaremos se está negativado. Para isso, usamos o contaGiovanna com o método depositar(100). E na linha seguinte exibimos novamente no console para analisarmos.
+
+var contaGiovanna = Conta(nome: "Giovanna")
+contaGiovanna.sacar(20)
+print(contaGiovanna.negativado)
+contaGiovanna.depositar(100)
+print(contaGiovanna.negativado)COPIAR CÓDIGO
+Ao clicarmos no botão "▶", obtemos:
+
+true
+false
+
+Não estamos mais negativados, o valor dessa propriedade negativado é falso. Essa é uma propriedade computada, que calcula o valor de forma automática.
+
+Há outro tipo de propriedade também, chamada de estática. Imagine a seguinte situação: temos uma taxa de transferência de 10% para transferir o valor de uma conta para outra.
+
+Essa taxa de transferência se aplica para todas as instâncias de uma conta, logo, faz mais sentido essa propriedade ser específica de uma classe e não de uma instância. Por isso, ela pode ser chamada de propriedade estática.
+
+Logo após a variável nome, pulamos uma linha e criaremos outra variável iniciando com static var nomeada de taxaTransferencia, que vai receber os 10% mas em valor decimal.
+
+static var taxaTransferencia = 0.1COPIAR CÓDIGO
+Agora, vamos ao final do arquivo para exibirmos no console a conta da Giovanna com a taxa de transferência. Para tal, usamos o print() passando Conta.taxaTransferencia. Observe que nem aparece o autocomplete do Xcode.
+
+print(contaGiovanna.taxaTransferencia)COPIAR CÓDIGO
+Assim, o nosso arquivo ficará:
+
+class Conta {
+    var saldo = 0.0
+    var nome: String
+
+    static var taxaTransferencia = 0.1
+
+    var negativado: Bool {
+        return saldo < 0
+    }
+
+    func sacar(_ valor: Double) {
+        saldo -= valor
+    }
+
+    func depositar(_ valor: Double) {
+        saldo += valor
+    }
+
+    init(nome: String) {
+        self.nome = nome
+    }
+}
+
+var contaGiovanna = Conta(nome: "Giovanna")
+contaGiovanna.sacar(20)
+print(contaGiovanna.negativado)
+contaGiovanna.depositar(100)
+print(contaGiovanna.negativado)
+print(contaGiovanna.taxaTransferencia)COPIAR CÓDIGO
+Logo após, clicamos no botão de play.
+
+O autocomplete não aparece, porque a taxaTransferencia não pertence a instância de uma classe Conta, e sim, à própria classe Conta. Assim, podemos acessá-la não por uma instância, e sim, escrevemos "Conta.taxaTransferencia" (por ser uma propriedade estática que pertence a classe em si e não a uma instância).
+
+print(Conta.taxaTransferencia)COPIAR CÓDIGO
+Ao clicarmos no botão "▶", obtemos:
+
+true
+false
+
+0.1
+
+Retornou os 10%! Então, para usar essa propriedade mesmo dentro da classe, escrevemos "Conta.taxaTransferencia".
+
+Outro ponto importante que esqueci de mencionar, é que quando falamos de propriedades computadas por calcular um valor de forma automática, elas não podem ser definidas como let (constante).
+
+Ou seja, no caso da variável negativado não poderia ser "let negativado: Bool{}". Isso porque o valor será alterado se precisarmos recalcular essa propriedade novamente e toda vez que acessarmos essa propriedade computada, estamos calculando um novo valor, e, portanto, alterando o seu valor. Por isso, ela só pode ser definida como var.
+
+Aprendemos sobre as propriedades armazenadas, computadas e estáticas. Te espero na próxima aula para continuarmos!
+
+@@03
+Para saber mais: Getters e Setters
+
+As propriedades computadas podem utilizar de getters e setters. Na verdade, quando você escreve uma variável computada, como na maneira abaixo:
+var area: Double {
+    return lado * lado
+}COPIAR CÓDIGO
+O que você realmente está escrevendo é:
+
+var area: Double {
+    get {
+        return lado * lado
+    }
+}COPIAR CÓDIGO
+O get fica implícito na sua variável, mas ele existe e está lá. Já o set é opcional. Basicamente, o get permite que você acesse a propriedade e seu valor que será calculado, enquanto o set permite que você realize algo quando essa propriedade for alterada para um novo valor.
+
+Leia mais sobre essa funcionalidade na documentação da linguagem Swift.
+
+https://docs.swift.org/swift-book/documentation/the-swift-programming-language/properties/
+
+@@04
+Propriedades
+
+Você aprendeu sobre diferentes tipos de propriedade. Analise o código abaixo e selecione a alternativa que representa o que será exibido no console e que define o tipo de propriedade da variável contagemEstudantes:
+class Estudante {
+    var nome: String
+    var idade: Int
+    static var contagemEstudantes = 0
+
+    init(nome: String, idade: Int) {
+        self.nome = nome
+        self.idade = idade
+        Estudante.contagemEstudantes += 1
+    }
+}
+
+let estudante1 = Estudante(nome: "João", idade: 28)
+let estudante2 = Estudante(nome: "Carlos", idade: 32)
+let estudante3 = Estudante(nome: "Ana", idade: 29)
+print(Estudante.contagemEstudantes) // O que será exibido?
+
+Será exibido no console o valor 3 e a propriedade contagemEstudantes é uma propriedade computada.
+ 
+Alternativa correta
+Será exibido no console o valor 3 e a propriedade contagemEstudantes é uma propriedade armazenada.
+ 
+Alternativa correta
+O código contém um erro, pois a propriedade contagemEstudantes pertence a uma instância da classe Estudante, e estamos acessando como uma propriedade da própria classe.
+ 
+Alternativa correta
+Será exibido no console o valor 3 e a propriedade contagemEstudantes é uma propriedade estática.
+ 
+O valor 3 será exibido no console e a propriedade contagemEstudantes é uma propriedade estática, pertencente a classe Estudante.
+
+@@05
+Observadores de propriedade
+
+Há cenários em que desejamos monitorar alterações de atributos de classes ou structs no nosso código. Por exemplo, supondo um aplicativo real, podemos querer realizar alguma alteração no layout da página quando uma variável for alterada.
+Isso é possível através dos observadores de propriedades.
+
+No nosso exemplo da classe Conta, podemos obter a informação de quando ela for alterada. Por exemplo, ao usarmos o método sacar o atributo saldo é modificado, e quando usamos o método depositar também. Conseguimos monitorar todas essas variações através dos observadores willSet e didSet.
+
+willSet: Novo valor
+didSet: Valor antigo
+Vamos visualizar na prática como eles funcionam!
+
+No arquivo da classe Conta, na variável saldo após ela receber o seu valor vamos abrir e fechar chaves.
+
+MyPlayground
+// Trecho de código suprimido
+
+class Conta {
+    var saldo = 0.0 {
+
+        }
+    var nome: String
+
+// Trecho de código suprimido
+
+}COPIAR CÓDIGO
+Dentro das chaves, escrevemos willSet e na sequência abrimos e fechamos as chaves novamente.
+
+// Trecho de código suprimido
+
+class Conta {
+    var saldo = 0.0 {
+                willSet {
+
+                }
+        }
+    var nome: String
+
+// Trecho de código suprimido
+
+}COPIAR CÓDIGO
+Esse observador chamado de willSet será disparado quando um atributo for modificado e ele obterá informações de qual será o novo valor desse atributo.
+
+Dentro do observador, exibiremos no console a frase "O saldo está sendo alterado! O seu novo valor será de ()", sendo (\()) a interpolação de uma variável numa string.
+
+// Trecho de código suprimido
+
+class Conta {
+    var saldo = 0.0 {
+                willSet {
+                        print("O saldo está sendo alterado! O seu novo valor será de \()")
+                }
+        }
+
+// Trecho de código suprimidoCOPIAR CÓDIGO
+Por padrão, o willSet já possui um valor chamado de newValue. Perceba que ao escrevermos "new" já aparece o autocomplete do Xcode. O newValue é, por padrão, o novo valor que o atributo saldo vai ter.
+
+// Trecho de código suprimido
+
+class Conta {
+    var saldo = 0.0 {
+                willSet {
+                        print("O saldo está sendo alterado! O seu novo valor será de \(newValue)")
+                }
+        }
+
+// Trecho de código suprimidoCOPIAR CÓDIGO
+Por enquanto, o nosso arquivo ficará:
+
+class Conta {
+    var saldo = 0.0 {
+                willSet {
+                        print("O saldo está sendo alterado! O seu novo valor será de \(newValue)")
+                }
+        }
+    var nome: String
+
+    static var taxaTransferencia = 0.1
+
+    var negativado: Bool {
+        return saldo < 0
+    }
+
+    func sacar(_ valor: Double) {
+        saldo -= valor
+    }
+
+    func depositar(_ valor: Double) {
+        saldo += valor
+    }
+
+    init(nome: String) {
+        self.nome = nome
+    }
+}
+
+var contaGiovanna = Conta(nome: "Giovanna")
+contaGiovanna.sacar(20)
+print(contaGiovanna.negativado)
+contaGiovanna.depositar(100)
+print(contaGiovanna.negativado)
+print(Conta.taxaTransferencia)COPIAR CÓDIGO
+No final do arquivo, removeremos todos os prints e deixaremos somente a variável contaGiovanna e o método sacar alteraremos para depositar.
+
+var contaGiovanna = Conta(nome: "Giovanna")
+contaGiovanna.depositar(20)COPIAR CÓDIGO
+Assim, ficamos com:
+
+class Conta {
+    var saldo = 0.0 {
+                willSet {
+                        print("O saldo está sendo alterado! O seu novo valor será de \(newValue)")
+                }
+        }
+    var nome: String
+
+    static var taxaTransferencia = 0.1
+
+    var negativado: Bool {
+        return saldo < 0
+    }
+
+    func sacar(_ valor: Double) {
+        saldo -= valor
+    }
+
+    func depositar(_ valor: Double) {
+        saldo += valor
+    }
+
+    init(nome: String) {
+        self.nome = nome
+    }
+}
+
+var contaGiovanna = Conta(nome: "Giovanna")
+contaGiovanna.depositar(20)COPIAR CÓDIGO
+Logo após, clicamos no botão de play "▶" do lado esquerdo na última linha do arquivo.
+
+No console, obtemos:
+
+O saldo está sendo alterado! O seu novo valor será de 20.0
+Legal! Esse é o observador de propriedade chamado de willSet.
+
+Temos também outro observador de propriedade chamado de didSet, que escreveremos abaixo do willSet, dentro da variável saldo.
+
+// Trecho de código suprimido
+
+class Conta {
+    var saldo = 0.0 {
+                willSet {
+                        print("O saldo está sendo alterado! O seu novo valor será de \(newValue)")
+                }
+
+                didSet {
+
+                }
+        }
+
+// Trecho de código suprimidoCOPIAR CÓDIGO
+Contudo, esse observador de propriedade didSet irá armazenar antigo do atributo saldo. Exibiremos no console a seguinte mensagem usando o print(): "O saldo está sendo alterado! O seu valor antigo era de ()".
+
+// Trecho de código suprimido
+
+class Conta {
+    var saldo = 0.0 {
+                willSet {
+                        print("O saldo está sendo alterado! O seu novo valor será de \(newValue)")
+                }
+
+                didSet {
+                        print("O saldo está sendo alterado! O seu valor antigo era de \()")
+                }
+        }
+
+// Trecho de código suprimidoCOPIAR CÓDIGO
+Dentro da interpolação de variáveis, por padrão, colocaremos a variável oldValue, sendo o valor anterior desse atributo saldo que foi alterado.
+
+// Trecho de código suprimido
+
+class Conta {
+    var saldo = 0.0 {
+                willSet {
+                        print("O saldo está sendo alterado! O seu novo valor será de \(newValue)")
+                }
+
+                didSet {
+                        print("O saldo está sendo alterado! O seu valor antigo era de \(oldValue)")
+                }
+        }
+
+// Trecho de código suprimidoCOPIAR CÓDIGO
+Agora clicamos no botão de play "▶" do lado esquerdo na última linha do arquivo.
+
+No console, obtemos:
+
+O saldo está sendo alterado! O seu novo valor será de 20.0
+O saldo está sendo alterado! O seu valor antigo era de 0.0
+
+Com isso, conseguimos monitorar quando o nosso atributo está sendo modificado. Isso é muito legal!
+
+No observador willSet, o "will" traduzindo para a língua portuguesa é "vai"; já o "did" é "foi". Portanto, will é futuro (novo valor) e did é passado (valor antigo).
+
+Aí você pensa: "Tá, legal. Mas não gostei do nome newValue no valor. Quero definir outro nome para essa variável". Para isso, vamos abrir e fechar parênteses após o nome do observador willSet e passar o valor desejado.
+
+No caso, vamos apenas traduzir para "novoValor", assim, trocamos esse valor no print() também. Faremos a mesma coisa para o didSet, nomeando de "valorAntigo".
+
+// Trecho de código suprimido
+
+class Conta {
+    var saldo = 0.0 {
+                willSet (novoValor) {
+                        print("O saldo está sendo alterado! O seu novo valor será de \(novoValor)")
+                }
+
+                didSet (valorAntigo) {
+                        print("O saldo está sendo alterado! O seu valor antigo era de \(valorAntigo)")
+                }
+        }
+
+// Trecho de código suprimidoCOPIAR CÓDIGO
+Em seguida, selecionamos o botão "▶" do lado esquerdo na última linha do arquivo.
+
+No console, observe que não tivemos alterações:
+
+O saldo está sendo alterado! O seu novo valor será de 20.0
+O saldo está sendo alterado! O seu valor antigo era de 0.0
+
+Mas continua funcionando conforme o esperado!
+
+Aprendemos sobre observadores de propriedades que monitoram as alterações realizadas nos atributos, sendo uma funcionalidade muito interessante da linguagem Swift.
+
+Te espero na próxima aula!
+
+@@06
+Desafios
+
+Agora que você já entendeu sobre os diferentes tipos de propriedades, como elas funcionam, e como podemos captar suas alterações, está na hora de praticarmos com desafios.
+Desafio 1 - Propriedades computadas
+Crie uma classe/struct “Pessoa” que possua os seguintes atributos, que funcionarão como propriedades armazenadas:
+
+Nome (String);
+Idade (Int);
+Altura (Double);
+Peso (Double).
+E então, crie duas propriedades computadas:
+
+IMC (que retorna o índice de massa corporal da pessoa a partir da sua altura e peso);
+Adulto (que retorna se a pessoa é maior de 18 ou não, a partir do atributo “idade”).
+Caso não saiba, o IMC é calculado por peso / (altura * altura).
+
+Desafio 2 - Observadores de propriedades
+Na aula anterior, quando vimos sobre herança, criamos a classe “Empregado” que possuía como atributo o salário, lembra-se disso?
+
+Agora, vamos criar um observador de propriedade para esse atributo. Caso o salário seja alterado para um valor maior do que era, exiba no console a mensagem: “Parabéns, você recebeu uma promoção”. Caso o novo valor seja o mesmo que o anterior, exiba então a mensagem: “Parece que não houve uma promoção dessa vez.”.
+
+Por fim, se o novo valor do salário for menor do que já era anteriormente, bloqueie essa operação e exiba no console a mensagem: “O novo salário não pode ser menor do que era anteriormente”.
+
+Lembre-se que para pegar o valor antigo, use o didSet, e para pegar o valor novo, use o willSet.
+
+Vamos lá?
+
+Opinião do instrutor
+
+No exercício 1, você pode ter desenvolvido algo como:
+struct Pessoa {
+  let nome: String
+  let idade: Int
+  let altura: Double
+  let peso: Double
+
+  var imc: Double {
+    return peso / (altura * altura)
+  }
+
+  var adulto: Bool {
+    return idade >= 18
+  }
+}
+COPIAR CÓDIGO
+Enquanto no exercício 2, eu cheguei nessa conclusão:
+
+class Empregado {
+  var nome: String
+  var salario: Double {
+    willSet {
+      if newValue > salario {
+        print("Parabéns, você recebeu um aumento no salário.")
+      } else if newValue == salario {
+        print("Parece que não houve uma promoção dessa vez.")
+      }
+    }
+
+    didSet {
+      if salario < oldValue {
+        print("O novo salário não pode ser menor do que era anteriormente.")
+        salario = oldValue
+      }
+    }
+  }
+
+  init(nome: String, salario: Double) {
+    self.nome = nome
+    self.salario = salario
+  }
+}
+
+let empregado = Empregado(nome: "Daniel", salario: 3000)
+empregado.salario = 3000
+empregado.salario = 4000
+empregado.salario = 3000
+print(empregado.salario) // 4000COPIAR CÓDIGO
+Observação: não se preocupe se seu código ficou muito diferente do meu, existem diversas maneiras de chegar em um mesmo resultado. Apenas certifique-se de que você está escrevendo um código legível, com nomes bem definidos, etc.
+
+//@@07
+Para saber mais: modificadores de acesso em atributos e métodos
+
+Você pode tornar um atributo ou um método privados. Isso significa que a instância não pode acessar esse atributo/método.
+Para fazer isso, basta colocar a palavra-chave private antes do atributo/método, como no exemplo abaixo:
+
+struct Pessoa {
+  var nome: String
+  var idade: Int
+  var altura: Double
+  var peso: Double
+
+  private var imc: Double {
+    return peso / (altura * altura)
+  }
+
+  var adulto: Bool {
+    return idade >= 18
+  }
+}
+
+let pessoa = Pessoa(nome: "Felipe", idade: 26, altura: 1.78, peso: 75)
+// pessoa.imc -> Erro!COPIAR CÓDIGO
+Agora, apenas a classe/struct em que você a definiu é quem pode acessar de fato esse atributo “IMC”. A instância não pode.
+
+Mas e se quisermos acessar uma propriedade mas prevenir de ser alterada? Para isso, basta utilizar o private(set). Veja no exemplo abaixo:
+
+struct Pessoa {
+  // ... restante do código
+  private(set) var altura: Double
+}
+
+var pessoa = Pessoa(nome: "Felipe", idade: 26, altura: 1.78, peso: 75)
+print(pessoa.altura) // 1.78
+// pessoa.altura = 1.80 -> Erro!COPIAR CÓDIGO
+Agora, a instância pode ler a propriedade “altura”, mas não pode modificá-la.
+
+@@08
+O que aprendemos?
+
+Nessa aula, você aprendeu a:
+Utilizar de propriedades armazenadas em classes e structs;
+Calcular propriedades com o uso de propriedades computadas;
+Criar e utilizar uma propriedade estática;
+Controlar o uso das propriedades com os observadores de propriedades.
+Se precisar de esclarecimentos, aciona a gente lá pelo fórum ou discord!
+
+Nos vemos na próxima aula!
+
+https://github.com/alura-cursos/swift-orientacao-a-objetos/tree/aula-03
+
+https://github.com/alura-cursos/swift-orientacao-a-objetos/archive/refs/heads/aula-03.zip
