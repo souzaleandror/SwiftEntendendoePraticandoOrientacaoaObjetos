@@ -1737,3 +1737,1538 @@ Nos vemos na próxima aula!
 https://github.com/alura-cursos/swift-orientacao-a-objetos/tree/aula-03
 
 https://github.com/alura-cursos/swift-orientacao-a-objetos/archive/refs/heads/aula-03.zip
+
+@04-Extensões, Protocolos e Enumerações
+
+@@01
+Projeto da aula anterior
+
+Foi criado um playground com exemplos similares ao que vimos na aula anterior. Você pode ir acompanhando o passo a passo do desenvolvimento do nosso código no Github e, caso deseje, pode baixar o código da aula anterior.
+Observação: o código fica dentro do arquivo “Contents.swift”, dentro de cada pasta do Playground.
+Bons estudos!
+
+02
+Extensões
+
+Imagine que precisamos implementar um método que transfira o valor de uma conta para outra. Para isso, após o método depositar, criaremos um novo chamado de transferir() passando dois parâmetros: contaDestino (do tipo Conta) e valor (do tipo double).
+Para isso, escrevemos func transferir(_ contaDestino: Conta, _ valor: Double) {}.
+
+// Trecho de código suprimido
+
+    func depositar(_ valor: Double) {
+        saldo += valor
+    }
+
+        func transferir(_ contaDestino: Conta, _ valor: Double) {
+
+        }
+
+    init(nome: String) {
+        self.nome = nome
+    }
+}
+
+// Trecho de código suprimidoCOPIAR CÓDIGO
+Ao transferirmos de uma conta para outra, precisamos, primeiro, sacar o valor dessa conta e, então, na contaDestino depositamos esse valor.
+
+// Trecho de código suprimido
+
+        func transferir(_ contaDestino: Conta, _ valor: Double) {
+                sacar(valor)
+                contaDestino.depositar(valor)
+        }
+
+// Trecho de código suprimido
+
+var contaGiovanna = Conta(nome: "Giovanna")
+contaGiovanna.depositar(200)
+
+var contaAna = Conta(nome: Ana)COPIAR CÓDIGO
+Logo após, clicamos no botão de play "▶".
+
+Já temos a instância contaGiovanna criada, que possui o nome "Giovanna" e está depositando o valor de R$200. Também declaramos outra instância chamada de contaAna, com o nome "Ana" que não executa nada, isto é, o saldo inicial é zero.
+
+Agora, transferiremos da contaGiovanna para a contaAna. Para tal, abaixo da conta da Ana, escrevemos que desejamos transferir da conta da Giovanna para a conta da Ana um valor de R$50: "contaGiovanna.transferir(contaAna, 50)".
+
+// Trecho de código suprimido
+
+var contaGiovanna = Conta(nome: "Giovanna")
+contaGiovanna.depositar(200)
+
+var contaAna = Conta(nome: Ana)
+contaGiovanna.transferir(contaAna, 50)COPIAR CÓDIGO
+Depois, exibimos no console o saldo da conta da Giovanna e da Ana.
+
+// Trecho de código suprimido
+
+var contaGiovanna = Conta(nome: "Giovanna")
+contaGiovanna.depositar(200)
+
+var contaAna = Conta(nome: Ana)
+contaGiovanna.transferir(contaAna, 50)
+
+print(contaGiovanna.saldo)
+print(contaAna.saldo)COPIAR CÓDIGO
+Logo após, clicamos no botão de play "▶".
+
+No console, obteremos o seguinte retorno:
+
+150.0
+50.0
+
+Então a Giovanna possui R$150 na conta, e a Ana R$50.
+
+Agora, imagine que o nosso protótipo de projeto fique muito grande e complexo ao longo do tempo. Para fins organizacionais, podemos reunir todos os métodos envolvendo transferência, porque vamos supor que implementaremos novos métodos de transferência como, por exemplo, se a transferência pode ser realizada; se há saldo o suficiente para realizar essa transferência; se a conta destino é válida. Isto é, há vários métodos relacionados à transferência.
+
+E para fins organizacionais, podemos acoplar todos esses métodos e funcionalidades em apenas um lugar. O Swift possui um tipo de dado chamado de Extension ("estender alguma coisa"), logo, podemos estender um tipo de dado existente que criamos ou não, e implementar novos métodos e funcionalidades dentro dessa extension.
+
+Então, logo após definirmos a nossa classe Conta, escrevemos "extension Conta {}".
+
+// Trecho de código suprimido
+
+    init(nome: String) {
+        self.nome = nome
+    }
+}
+
+    extension Conta {
+
+    }
+
+var contaGiovanna = Conta(nome: "Giovanna")
+contaGiovanna.depositar(200)
+
+var contaAna = Conta(nome: Ana)
+contaGiovanna.transferir(contaAna, 50)
+
+print(contaGiovanna.saldo)
+print(contaAna.saldo)
+
+// Trecho de código suprimidoCOPIAR CÓDIGO
+Dentro da extension, colaremos toda a estrutura do método transferir (podemos remover esse método da classe Conta e deixá-lo somente na extension).
+
+// Trecho de código suprimido
+
+    extension Conta {
+            func transferir(_ contaDestino: Conta, _ valor: Double) {
+                sacar(valor)
+                contaDestino.depositar(valor)
+        }
+    }
+
+// Trecho de código suprimidoCOPIAR CÓDIGO
+Estamos em apenas um arquivo playground, a nossa classe de conta e a extension também estão nesse arquivo. Contudo, imagine um projeto maior no qual teremos diversos arquivos em várias pastas. Podemos colocar a extension em qualquer lugar, pois funcionará da mesma forma.
+
+Ao executarmos o código, observe que nada de diferente aconteceu!
+
+A extension serve para estendermos um tipo de dado já existente, pode ser classe ou uma struct. E podemos implementar novos métodos e usar para fins de organização.
+
+Você pode não conseguir visualizar tanto assim a utilidade disso tudo, mas vamos verificar uma coisa interessante agora! Lembra que mencionamos que a extension nos permite estender um tipo de dado já existente, que criamos ou não, certo?
+
+Isso significa que podemos estender tipos de dados existente da linguagem Swift, como o int, double, string, bool, entre outros tipos. Não sabemos onde esses dados estão sendo definidos, não temos acesso ao código, mas podemos estendê-los em qualquer lugar do nosso projeto.
+
+Vamos parar um pouco com o exemplo do aplicativo do Banco, voltaremos com os tipos de dados primitivos (dados já existentes pela linguagem Swift).
+
+Vamos ao final do nosso arquivo MyPlayground (poderíamos remover o código acima, mas não é obrigatório). Imaginemos o seguinte: precisamos implementar um método que contabilize quantos caracteres têm em uma string.
+
+Para solucionarmos isso, poderíamos criar uma função chamada de contaCaracteresString(), passando como parâmetro a string que desejamos contabilizar o número de caracteres. Logo após, vamos retornar um inteiro (INT) e abrir e fechar chaves.
+
+// Trecho de código suprimido
+
+print(contaGiovanna.saldo)
+print(contaAna.saldo)
+
+func contaCaracteresString(_ texto: String) -> Int {
+
+}COPIAR CÓDIGO
+Para contarmos os caracteres, podemos usar a propriedade count. Logo, vamos retornar o texto que colocamos no parâmetro e na sequência o count.
+
+// Trecho de código suprimido
+
+func contaCaracteresString(_ texto: String) -> Int {
+    return texto.count
+}COPIAR CÓDIGO
+Após o fechamento de chaves, criaremos uma variável chamada de texto, onde vamos atribuir a string "Giovanna". Na linha seguinte, chamamos a função contaCaracteresString passando a variável texto.
+
+// Trecho de código suprimido
+
+func contaCaracteresString(_ texto: String) -> Int {
+    return texto.count
+}
+let texto = "Giovanna"
+contaCaracteresString(texto)COPIAR CÓDIGO
+Em seguida, clicamos no botão "▶".
+
+Ao executarmos o código, à direita, temos:
+
+"Giovanna"
+8
+
+O retorno foi de oito caracteres para o texto "Giovanna".
+
+Não aplicamos nada demais aqui, fizemos uma função que contabiliza caracteres. Mas podemos usar o extension, para fazer com que esse método contaCaracteresString seja um método próprio da struct string. Afinal, string é uma struct.
+
+Como estamos aprendendo no curso, sobre classes e structs. Os tipos de dados existentes do Swift também são definidos dessa maneira.
+
+Logo, abaixo da linha que chamamos a função contaCaracteresString, escrevemos "extension String{}".
+
+// Trecho de código suprimido
+
+func contaCaracteresString(_ texto: String) -> Int {
+    return texto.count
+}
+let texto = "Giovanna"
+contaCaracteresString(texto)
+
+extension String {
+
+}COPIAR CÓDIGO
+Ao teclarmos "Option" ou "alt" na extension String, será aberta uma janela intitulada de "Summary". Em "Declaration", temos:
+
+@frozen struct StringCOPIAR CÓDIGO
+Isso quer dizer que a string é, de fato, uma struct. Assim, tudo o que aprendemos sobre atributos e métodos, também se aplicam a esses tipos de dados primitivos da linguagem Swift.
+
+Logo, dentro da extension String podemos definir métodos! Escrevemos "func contaCaracteresString()", mas não passamos nenhum parâmetro, porque como ela está dentro de uma struct string podemos referenciar essa struct como self. Já, já você entenderá melhor!
+
+// Trecho de código suprimido
+
+extension String {
+        func contaCaracteresString()
+}COPIAR CÓDIGO
+Voltando ao arquivo, o retorno dessa função é um inteiro. E dentro da função, vamos retornar self.count.
+
+// Trecho de código suprimido
+
+extension String {
+        func contaCaracteresString() -> Int {
+                return self.count
+        }
+}COPIAR CÓDIGO
+O self é a instância, o objeto de fato.
+
+Na sequência, exibiremos no console o "texto.contaCaracteresString()".
+
+// Trecho de código suprimido
+
+extension String {
+        func contaCaracteresString() -> Int {
+                return self.count
+        }
+}
+print(texto.contaCaracteresString())COPIAR CÓDIGO
+Depois, clicamos no botão de executar.
+
+Como retorno no console, obtemos:
+
+150.0
+50.0
+
+8
+
+Retornou o valor oito!
+
+Recapitulando
+O tipo de dado string é definido por uma struct. Vamos analisar o seguinte trecho:
+
+// Trecho de código suprimido
+
+func contaCaracteresString(_ texto: String) -> Int {
+    return texto.count
+}
+let texto = "Giovanna"
+contaCaracteresString(texto)
+
+extension String {
+        func contaCaracteresString() -> Int {
+                return self.count
+        }
+}
+print(texto.contaCaracteresString())COPIAR CÓDIGO
+Nós igualamos a variável texto com "Giovanna", mas por ser uma struct também poderíamos colocar em volta dessas aspas duplas Giovanna, a String().
+
+let texto = String("Giovanna")COPIAR CÓDIGO
+Igual ao que declaramos quando criamos a instância de uma struct ou de uma classe.
+
+Após essa alteração, podemos executar o código. Nada de diferente retornou no console:
+
+150.0
+50.0
+
+8
+
+Assim, a constante texto é uma instância da struct string. Por isso, na extension String quando implementamos o método de contaCaracteresString usamos o self.
+
+print(texto.contaCaracteresString())COPIAR CÓDIGO
+Logo, ao exibirmos no console (linha 46) observe que o contaCaracteresString é um método da instância texto, sendo a instância de uma struct.
+
+Fez mais sentido agora o uso de extensions? Como podemos estender novos métodos e funcionalidades de um tipo de dado já existente?
+
+Outro ponto importante, é que extensions não podem conter propriedades armazenadas, apenas computadas e estáticas.
+
+Com isso, se tentarmos declarar uma variável chamada de texto dentro da extension String e rodarmos, note que ele exibe um erro informando que extensions não devem conter propriedades armazenadas.
+
+// Trecho de código suprimido
+
+extension String {
+        var texto = ""
+        func contaCaracteresString() -> Int {
+                return self.count
+        }
+}
+print(texto.contaCaracteresString())COPIAR CÓDIGO
+Logo, não podemos usar o var texto = "", e podemos removê-lo.
+
+Concluímos que, extensions são usadas para estender funcionalidades e métodos de tipos de dados já existentes. São muito utilizadas também para organizar o código.
+
+Te espero para o próximo conteúdo!
+
+@@03
+Para saber mais: diferença entre Self e self
+
+No vídeo de extensões, você viu que self refere-se à instância de um tipo de dado customizado, como classe ou struct.
+Mas você sabia que, na linguagem Swift, a palavra Self, com ‘S’ maiúsculo, também é utilizada? Vamos analisar a diferença entre elas. Veja o exemplo a seguir, utilizando extension, no primeiro código:
+
+extension Int {
+    func somaNumeroCom(_ numero: Self) -> Self {
+        return numero + self
+    }
+}
+
+let numero = 10
+let resultadoSoma = numero.somaNumeroCom(20)
+print(resultadoSoma) // Será exibido no console o valor 30COPIAR CÓDIGO
+Não se preocupe se você não entendeu o código acima, vamos por partes! Estamos criando uma extensão do tipo de dado Int, previamente definido pela linguagem Swift, e adicionando um método chamado somaNumeroCom, que soma a instância dessa struct Int com algum outro valor que passamos por parâmetro. Por fim, retornamos um objeto do tipo Self, já vamos entender o que isso significa!
+
+Você poderia escrever o mesmo código da seguinte maneira; veja o segundo código:
+
+extension Int {
+    func somaNumeroCom(_ numero: Int) -> Int {
+        return numero + self
+    }
+}
+
+let numeroDez = 10
+let resultadoSoma = numeroDez.somaNumeroCom(20)
+print(resultadoSoma) // Será exibido no console o valor 30COPIAR CÓDIGO
+Consegue perceber a diferença?
+
+No primeiro códigosomaNumeroCom, temos os dois: o Self com “s” maiúsculo e o self com minúsculo. Ou seja, o Self está presente no tipo de dado do parâmetro recebido na função e também no retorno da função; ou seja, o Self se refere ao dado de tipo Int.
+
+No segundo código, colocamos o Int no lugar de Self, e então temos só a palavra-chave self em caixa baixa. Isso porque, na linguagem Swift, essa palavra-chave self é usada para se referir a uma instância específica do tipo de dado, enquanto o tipo Self se refere ao tipo de dado atual, como classes, structs, etc.
+
+Portanto, no exemplo dado, Self é Int, enquanto self é a instância, ou seja, a variável numeroDez com o valor 10.
+
+@@04
+Protocolos
+
+No nosso exemplo até o momento, definimos que a nossa classe ou struct Conta precisa ter o atributo saldo e métodos, como sacar e depositar. Contudo, definimos isso de forma não documentada.
+Para garantirmos que uma classe ou struct sempre possua determinados atributos e métodos, podemos usar protocolos.
+
+Os protocolos são um conjunto de regras definidas que devem ser seguidas. Logo, podemos criar um protocolo que define o atributo saldo e os métodos de sacar e depositar.
+
+E se passarmos que um tipo de dado, como a classe ou a struct, implementa esse protocolo, significa que esses tributos e métodos definidos pelo protocolo precisam ser implementados pelo nosso tipo de dado.
+
+Vamos visualizar isso na prática!
+
+No Xcode, em um arquivo chamado de MyPlayground sem nenhum código, criaremos uma classe chamada de ContaCorrente.
+
+class ContaCorrente {
+
+}COPIAR CÓDIGO
+Não vamos definir nenhum método ou atributo. Acima da classe, pularemos uma linha e definiremos um protocolo chamado de Conta{}.
+
+protocol Conta {
+
+}
+
+class ContaCorrente {
+
+}COPIAR CÓDIGO
+Dentro do protocolo, vamos definir atributos e métodos. Primeiro, definiremos o atributo saldo que será do tipo Double; e então, vamos determinar os métodos, começando pelo de sacar que vai receber como parâmetro o valor que será do tipo Double.
+
+protocol Conta {
+        var saldo: Double
+
+        func sacar(_ valor: Double)
+}
+
+class ContaCorrente {
+
+}COPIAR CÓDIGO
+Mas observe que apenas definimos o método, e não implementá-lo. Por isso, nem vamos abrir e fechar chaves, estamos somente definindo como ele deve ser implementado. A forma que ele será implementado e o que terá dentro dele, é a classe que implementará depois.
+
+Assim, dentro de protocol criaremos outro método chamado de depositar. Escrevemos "func depositar()" que terá um valor também do tipo double.
+
+protocol Conta {
+        var saldo: Double
+
+        func sacar(_ valor: Double)
+
+        func depositar(_ valor: Double)
+}
+
+class ContaCorrente {
+
+}COPIAR CÓDIGO
+Do lado superior direito do código, está sendo exibida uma mensagem de erro:
+
+Property in protocol must have explicit { get } or { get set } specifier
+Insert '{get <#set#>}'
+
+Ele informa que uma propriedade em um protocolo precisa ter de forma explícita um get set ou set. Clicando no botão "Fix" do canto inferior direito da mensagem de erro, observe que ele insere de forma automática no nosso código.
+
+protocol Conta {
+        var saldo: Double { get set }
+
+        func sacar(_ valor: Double)
+
+        func depositar(_ valor: Double)
+}
+
+class ContaCorrente {
+
+}COPIAR CÓDIGO
+O "set" do get set da instrutora estava destacado em azul, para ajustar isso, ela somente selecionou o set e digitou novamente.
+O que significa esse { get set }? Significa que essa propriedade pode ser lida e alterada. Com o get pegamos a informação; com o set nós setamos uma informação. Assim essa propriedade pode ser tanto de leitura quanto de escrita.
+
+Podemos executar o código! Observe que nada aconteceu.
+
+Agora, na linha 9, na classe ContaCorrente vamos definir que essa classe implementa o protocolo Conta. Para fazermos isso, usamos a mesma sintaxe da herança, na sequência colocamos dois pontos (":") e depois "Conta".
+
+protocol Conta {
+        var saldo: Double { get set }
+
+        func sacar(_ valor: Double)
+
+        func depositar(_ valor: Double)
+}
+
+class ContaCorrente: Conta {
+
+}COPIAR CÓDIGO
+Ao clicarmos no botão de execução do código, será exibida a seguinte mensagem com o erro:
+
+Type 'ContaCorrente' does not conform to protocol 'Conta'
+Do you want to add protocol stubs?
+
+Ele nos informa que o nosso tipo "ContaCorrente" não está em conformidade com o protocolo Conta. Isso porque estamos definindo no protocolo de qualquer tipo de dado que implemente esse protocolo precisa ter os métodos: saldo, sacar e depositar.
+
+E perceba que não estabelecemos nada para a classe ContaCorrente. Para ajustarmos isso, clicamos em "Fix" no canto inferior direito da janela com a mensagem de erro.
+
+Assim, ficará:
+
+protocol Conta {
+        var saldo: Double { get set }
+
+        func sacar(_ valor: Double)
+
+        func depositar(_ valor: Double)
+}
+
+class ContaCorrente: Conta {
+    var saldo: Double 
+
+    func sacar(_ valor: Double) {
+
+    }
+
+    func depositar(_ valor: Double) {
+
+    }
+}COPIAR CÓDIGO
+Com isso, ele insere automaticamente os métodos e atributos necessários. Agora, a implementação é com nós!
+
+Dentro do método sacar, passamossaldo -= valor; e dentro do método depositar colocaremos saldo += valor.
+
+protocol Conta {
+        var saldo: Double { get set }
+
+        func sacar(_ valor: Double)
+
+        func depositar(_ valor: Double)
+}
+
+class ContaCorrente: Conta {
+    var saldo: Double 
+
+    func sacar(_ valor: Double) {
+        saldo -= valor
+    }
+
+    func depositar(_ valor: Double) {
+        saldo += valor
+    }
+}COPIAR CÓDIGO
+Como o atributo saldo não está sendo inicializado, precisamos ter um construtor. Então logo após o fechamento de chaves do método depositar escrevemos init() {} passando que o saldo é igual a zero.
+
+protocol Conta {
+        var saldo: Double { get set }
+
+        func sacar(_ valor: Double)
+
+        func depositar(_ valor: Double)
+}
+
+class ContaCorrente: Conta {
+    var saldo: Double 
+
+    func sacar(_ valor: Double) {
+        saldo -= valor
+    }
+
+    func depositar(_ valor: Double) {
+        saldo += valor
+    }
+
+    init() {
+        saldo = 0.0
+        }
+}COPIAR CÓDIGO
+Logo após, clicamos no botão "▶" para executar. Nada irá acontecer novamente, dado que não estabelecemos nenhuma instância para essa classe. Mas você pode criar as variáveis que funcionam como instância, acessar os métodos sacar e depositar que tudo irá funcionar conforme o esperado.
+
+Caso não queira criar o construtor init() declarando o saldo como zero, pode simplesmente removê-lo e inserir essa inicialização do saldo na variável saldo da ContaCorrente. Assim, ficará:
+
+protocol Conta {
+        var saldo: Double { get set }
+
+        func sacar(_ valor: Double)
+
+        func depositar(_ valor: Double)
+}
+
+class ContaCorrente: Conta {
+    var saldo: Double = 0.0
+
+    func sacar(_ valor: Double) {
+        saldo -= valor
+    }
+
+    func depositar(_ valor: Double) {
+        saldo += valor
+    }
+}COPIAR CÓDIGO
+Nesta aula, aprendemos sobre os protocolos, como definir atributos e métodos que sejam implementados por um tipo de dado que esteja em conformidade com esse protocolo.
+
+Te espero para um próximo conteúdo. Até mais!
+
+@@05
+Número par ou ímpar?
+
+Você aprendeu sobre extensões e protocolos até agora.
+Imagine que você precise implementar uma função que checa se um número inteiro é par ou não.
+
+Assinale a alternativa que representa o melhor código para adicionar essa nova funcionalidade em um tipo já existente:
+
+extension Int {
+  func checaNumeroPar(_ numero: Int) -> Bool {
+    return numero % 2 == 0
+  }
+}
+
+Int.checaNumeroPar(2)
+ 
+Alternativa correta
+extension Int {
+  func checaNumeroPar() -> Bool {
+    return Int % 2 == 0
+  }
+}
+
+2.checaNumeroPar() // true
+ 
+Esse código causa um erro de execução pois estamos usando a declaração do tipo de dado Int para uma operação, o que não é possível visto que precisamos lidar com valores, instâncias.
+Alternativa correta
+func checaNumeroPar(_ numero: Int) -> Bool {
+  return numero % 2 == 0
+}
+ 
+Alternativa correta
+extension Int {
+  func checaNumeroPar() -> Bool {
+    return self % 2 == 0
+  }
+}
+
+2.checaNumeroPar() // true
+ 
+Aqui há a extensão do tipo já existente Int e estamos implementando um método adicional nela que atua no próprio número, por isso usamos o self.
+
+@@06
+Enumerações
+
+Seguindo com o nosso exemplo do banco: imagine que dentro de uma conta corrente, precisamos implementar uma função que realize o pagamento da fatura de um cartão de crédito.
+Essa função receberá, como parâmetro, como a pessoa usuária irá de fato pagar essa fatura. Podendo ser através de pix, boleto, saldo em conta, entre outras opções. Porém, no momento trabalharemos somente com essas três opções.
+
+Temos a nossa classe Conta criada, com os atributos saldo e nome e os métodos sacar e depositar.
+
+class Conta {
+    var saldo = 0.0
+    var nome: String
+
+    func sacar(_ valor: Double) {
+        saldo -= valor
+    }
+
+    func depositar(_ valor: Double) {
+        saldo += valor
+    }
+
+    init(nome: String) {
+        self.nome = nome
+    }
+}
+
+var contaGiovanna = Conta(nome: "Giovanna")COPIAR CÓDIGO
+Logo após a função depositar, criaremos uma nova função chamada de pagamentoCartao() passando o tipo do pagamento e definindo como string.
+
+class Conta {
+    var saldo = 0.0
+    var nome: String
+
+    func sacar(_ valor: Double) {
+        saldo -= valor
+    }
+
+    func depositar(_ valor: Double) {
+        saldo += valor
+    }
+
+        func pagamentoCartao(_ tipoPagamento: String) {
+
+        }
+
+    init(nome: String) {
+        self.nome = nome
+    }
+}
+
+var contaGiovanna = Conta(nome: "Giovanna")COPIAR CÓDIGO
+No escopo da função pagamentoCartao, vamos criar um comando switch para analisarmos o que recebemos como tipo de pagamento. Então, escrevemos "switch tipoPagamento{}".
+
+class Conta {
+    var saldo = 0.0
+    var nome: String
+
+    func sacar(_ valor: Double) {
+        saldo -= valor
+    }
+
+    func depositar(_ valor: Double) {
+        saldo += valor
+    }
+
+        func pagamentoCartao(_ tipoPagamento: String) {
+                switch tipoPagamento {
+
+                }
+        }
+
+    init(nome: String) {
+        self.nome = nome
+    }
+}
+
+var contaGiovanna = Conta(nome: "Giovanna")COPIAR CÓDIGO
+No switch, adicionaremos três casos. Escrevemos case "", as aspas duplas é para referenciar que estamos tratando de uma string. Dentro das aspas duplas digitamos "pix", depois dois pontos (":") e exibimos no console a mensagem "O pagamento será efetuado por pix".
+
+// Trecho de código suprimido
+
+        func pagamentoCartao(_ tipoPagamento: String) {
+                switch tipoPagamento {
+                case "pix": print("O pagamento será efetuado por pix")
+                }
+        }
+
+    init(nome: String) {
+        self.nome = nome
+    }
+}
+
+var contaGiovanna = Conta(nome: "Giovanna")COPIAR CÓDIGO
+Em seguida, criaremos mais dois casos, o de boleto e o de saldo em conta seguindo a mesma lógica.
+
+// Trecho de código suprimido
+
+        func pagamentoCartao(_ tipoPagamento: String) {
+                switch tipoPagamento {
+                case "pix": print("O pagamento será efetuado por pix")
+                case "boleto": print("O pagamento será efetuado por boleto")
+                case "saldoEmConta": print("O pagamento será efetuado por saldo em conta")
+                }
+        }
+
+    init(nome: String) {
+        self.nome = nome
+    }
+}
+
+var contaGiovanna = Conta(nome: "Giovanna")COPIAR CÓDIGO
+Precisamos ter um caso default, que será executado quando nenhum dos três casos acima ocorrer. Colocaremos somente "default:break" porque não desejamos que ele faça nada.
+
+// Trecho de código suprimido
+
+        func pagamentoCartao(_ tipoPagamento: String) {
+                switch tipoPagamento {
+                case "pix": print("O pagamento será efetuado por pix")
+                case "boleto": print("O pagamento será efetuado por boleto")
+                case "saldoEmConta": print("O pagamento será efetuado por saldo em conta")
+                default: break
+                }
+        }
+
+    init(nome: String) {
+        self.nome = nome
+    }
+}
+
+var contaGiovanna = Conta(nome: "Giovanna")COPIAR CÓDIGO
+Na linha 27 (var contaGiovanna), instanciamos a classe conta passando o nome Giovanna, e agora acessamos esse método pagamentoCartao.
+
+Então na linha seguinte, escrevemos contaGiovanna.pagamentoCartao(tipoPagamento: String).
+
+// Trecho de código suprimido
+
+var contaGiovanna = Conta(nome: "Giovanna")
+contaGiovanna.pagamentoCartao(tipoPagamento: String)COPIAR CÓDIGO
+No lugar de "tipoPagamento" escrevemos "pix" com as aspas duplas e podemos remover ": String".
+
+// Trecho de código suprimido
+
+var contaGiovanna = Conta(nome: "Giovanna")
+contaGiovanna.pagamentoCartao("pix")COPIAR CÓDIGO
+Em seguida, clicamos no botão "▶".
+
+No console, obtemos como retorno:
+
+O pagamento será efetuado por pix
+Passamos o pix, mas e se escrevêssemos algo com um erro ortográfico? Por exemplo, passar "pixx". Ao clicarmos no botão para executar, observe que nada será exibido no console.
+
+Isso acontece porque nenhum dos casos que passamos na função pagamentoCartao está sendo atendida. Mas então, vamos supor que outra pessoa desenvolvedora começa a trabalhar no nosso código e analisa o método pagamentoCartao, observando que o tipoPagamento está sendo definido como string.
+
+A pessoa desenvolvedora pode pensar: "Mas qual string preciso passar para esse método funcionar?". Supondo que a pessoa não tenha acesso ao código dentro do switch com os casos, possuindo acesso somente ao método pagamentoCartao que recebe uma string.
+
+Perceba que são questões difíceis de lidarmos ao trabalharmos com algum tipo de dado considerado vago, como é o caso de uma string. Isso porque podemos passar qualquer string no lugar de "pix", pode não exibir nada no console, mas ele deixa passar.
+
+É a partir desse cenário que entra um tipo de dado chamado de enumeração da linguagem Swift. Esse tipo de dado, nos permite definir casos concretos.
+
+Voltando ao arquivo da classe Conta, no topo do código pularemos duas linhas e definiremos uma enumeração. Para isso, usamos a palavra chave enum que chamaremos de FormaDePagamento e abrimos e fechamos chaves.
+
+Assim, o nosso código ficará:
+
+enum FormaDePagamento {
+
+}
+
+class Conta {
+    var saldo = 0.0
+    var nome: String
+
+    func sacar(_ valor: Double) {
+        saldo -= valor
+    }
+
+    func depositar(_ valor: Double) {
+        saldo += valor
+    }
+
+    func pagamentoCartao(_ tipoPagamento: String) {
+      switch tipoPagamento {
+    case "pix": print("O pagamento será efetuado por pix")
+    case "boleto": print("O pagamento será efetuado por boleto"
+    case "saldoEmConta": print("O pagamento será efetuado por saldo em conta")
+      default: break
+      }
+    }
+
+    init(nome: String) {
+        self.nome = nome
+    }
+}
+
+var contaGiovanna = Conta(nome: "Giovanna")
+contaGiovanna.pagamentoCartao("pix")COPIAR CÓDIGO
+Dentro no enum FormaDePagamento, criaremos os casos. Para tal, digitamos case pix, e na linha seguinte case boleto e na próxima case saldoEmConta.
+
+enum FormaDePagamento {
+    case pix
+    case boleto
+    case saldoEmConta
+}
+
+// Trecho de código suprimidoCOPIAR CÓDIGO
+Portanto, esses serão os casos abordados pelo nosso enum FormaDePagamento.
+
+Agora, no método pagamentoCartao, ao invés de recebermos uma string receberemos como parâmetro a FormaDePagamento (variável do tipo FormaDePagamento).
+
+// Trecho de código suprimido
+
+    func pagamentoCartao(_ tipoPagamento: FormaDePagamento) {
+      switch tipoPagamento {
+    case "pix": print("O pagamento será efetuado por pix")
+    case "boleto": print("O pagamento será efetuado por boleto"
+    case "saldoEmConta": print("O pagamento será efetuado por saldo em conta")
+      default: break
+      }
+    }
+
+// Trecho de código suprimidoCOPIAR CÓDIGO
+Foram gerados alguns erros nos casos, porque não estamos mais trabalhando com strings e sim com a FormaDePagamento, sendo um tipo de dado que criamos.
+
+Dentro do primeiro case do pix, podemos remover a string com "pix" e no lugar digitar ponto ".". Observe que será exibido um menu com as seguintes opções:
+
+boleto
+pix
+saldoEmConta
+No caso, vamos escolher a opção "pix". Seguiremos a mesma lógica para os outros casos. Isso acontece porque estamos recebendo como parâmetro o tipo de dado FormaDePagamento.
+
+// Trecho de código suprimido
+
+    func pagamentoCartao(_ tipoPagamento: FormaDePagamento) {
+        switch tipoPagamento {
+        case .pix: print("O pagamento será efetuado por pix")
+        case .boleto: print("O pagamento será efetuado por boleto")
+        case .saldoEmConta: print("O pagamento será efetuado por saldo em conta")
+        //default: break
+        }
+    }
+
+// Trecho de código suprimidoCOPIAR CÓDIGO
+Esse ponto que estamos usando é uma abreviação, podemos escrever da seguinte forma esse trecho de código:
+
+case FormaDePagamento.pix: print("O pagamento será efetuado por pix")COPIAR CÓDIGO
+Funcionaria da mesma forma, mas por questão de agilidade colocamos somente o ponto. Não vamos alterar, foi apenas uma observação legal de mencionarmos.
+
+Descendo o código na última linha, ao chamarmos a função não podemos mais passar uma string qualquer, precisamos passar um objeto válido do FormaDePagamento.
+
+Assim, se colocarmos ponto dentro do parênteses do pagamentoCartao(), observe que já são exibidas as três opções de objetos válidos: saldoEmConta, boleto e pix. Clicamos na opção "pix".
+
+contaGiovanna.pagamentoCartao(.pix)COPIAR CÓDIGO
+Ao selecionarmos o botão "▶", obtemos no console:
+
+O pagamento será efetuado por pix
+Com isso, o código funciona conforme o esperado! Não retornou nenhum erro, pois estamos com os nossos casos bem definidos.
+
+Na linha 24, do default, temos a mensagem em inglês: "Default will never be executed" (em português, "o default nunca será executado").
+
+Isso porque já abordamos, dentro do switch, todos os casos disponíveis no enum FormaDePagamento. Portanto, podemos deixar essa linha comentada ou simplesmente remover.
+
+Logo após, clicamos no botão "▶" novamente. Obtemos no console:
+
+O pagamento será efetuado por pix
+Tudo funcionou conforme o esperado.
+
+Logo, as enumerações são usadas também com o switch por conseguirmos abordar diferentes casos. Podemos realizar essas enumerações para qualquer tipo de caso.
+
+Por exemplo, saindo um pouco do exemplo de banco, pulando uma linha no final do arquivo criaremos uma enumeração representando os meses do ano. Para isso, escrevemos "enum Mes {}".
+
+// Trecho de código suprimido
+
+enum Mes {
+
+}COPIAR CÓDIGO
+Dentro do enum Mes, escrevemos case com todos os meses ao longo do ano seguidos: janeiro, fevereiro, marco, abril, maio, junho, julho, agosto, setembro, outubro, novembro, dezembro. Observe que não precisamos colocar case janeiro, case fevereiro, etc.
+
+// Trecho de código suprimido
+
+enum Mes {
+    case janeiro, fevereiro, marco, abril, maio, junho, julho, agosto, setembro, outubro, novembro, dezembro
+}COPIAR CÓDIGO
+Temos um enum representando os meses do ano! Para inicializá-lo criaremos uma variável chamada de janeiro e igualá-la ao Mes.janeiro.
+
+// Trecho de código suprimido
+
+enum Mes {
+    case janeiro, fevereiro, marco, abril, maio, junho, julho, agosto, setembro, outubro, novembro, dezembro
+}
+
+var janeiro = Mes.janeiroCOPIAR CÓDIGO
+Outra forma de declararmos é criando a variável chamada de fevereiro, por exemplo, na sequência dois pontos (para definirmos explicitamente o tipo de dado) e depois "Mes" e igualar tudo isso a ".fevereiro".
+
+// Trecho de código suprimido
+
+enum Mes {
+    case janeiro, fevereiro, marco, abril, maio, junho, julho, agosto, setembro, outubro, novembro, dezembro
+}
+
+var janeiro = Mes.janeiro
+var fevereiro: Mes = .fevereiroCOPIAR CÓDIGO
+Como declaramos de forma explícita que o tipo de dado é "Mes", simplesmente colocamos o ponto para referenciar.
+
+Não lembro se já mencionei, mas em struct e classes, isso também acontece. Por exemplo, ao declararmos na linha 32 a conta Giovanna:
+
+var contaGiovanna = Conta(nome: "Giovanna")COPIAR CÓDIGO
+Podemos definir de forma explícita que é do tipo Conta após o contaGiovanna, acrescentando dois pontos Conta. E ao invés de igualar ao "Conta(nome: "Giovanna")" no lugar de "Conta" colocamos o ponto init (.init).
+
+var contaGiovanna: Conta = .init(nome: "Giovanna")COPIAR CÓDIGO
+É só uma forma diferente de representarmos algo, de inicializarmos diferentes tipos de dados, não altera no funcionamento.
+
+Nesta aula, aprendemos como usar as enumerações e os motivos pelos quais elas são úteis. Te espero para o próximo conteúdo!
+
+@@07
+Raw Values
+
+Aprendemos sobre a criação de enumerações, e criamos um enum para representar a forma de pagamento e os meses do ano. Mas você sabia que podemos ter um valor customizado para cada caso de uma enumeração?
+Vamos aprender como isso funciona na prática!
+
+Raw Values
+Os valores que representam cada caso de uma enumeração, são chamados de Raw Values (em português, "valor bruto"). Como esse valor bruto funciona?
+
+// Trecho de código suprimido
+
+enum Mes {
+    case janeiro, fevereiro, marco, abril, maio, junho, julho, agosto, setembro, outubro, novembro, dezembro
+}
+
+var janeiro = Mes.janeiro
+var fevereiro: Mes = .fevereiroCOPIAR CÓDIGO
+Após declararmos o nosso enum Mes, na sequência adicionamos dois pontos e colocamos o tipo inteiro (: Int). Isso porque cada caso será representado por um inteiro.
+
+// Trecho de código suprimido
+
+enum Mes: Int {
+    case janeiro, fevereiro, marco, abril, maio, junho, julho, agosto, setembro, outubro, novembro, dezembro
+}
+
+var janeiro = Mes.janeiro
+var fevereiro: Mes = .fevereiroCOPIAR CÓDIGO
+Na linha 39, após a criação da variável chamada de janeiro, pularemos uma linha e exibiremos no console "janeiro.rawValue".
+
+// Trecho de código suprimido
+
+enum Mes: Int {
+    case janeiro, fevereiro, marco, abril, maio, junho, julho, agosto, setembro, outubro, novembro, dezembro
+}
+
+var janeiro = Mes.janeiro
+print(janeiro.rawValue)
+var fevereiro: Mes = .fevereiroCOPIAR CÓDIGO
+Ao executarmos o código, temos o seguinte retorno no console:
+
+O pagamento será efetuado por pix
+0
+
+O Raw Value de janeiro é zero, porque, por padrão, ao usarmos o inteiro ele inicia com o número zero.
+
+Porém, se formos na linha 36 e logo após o janeiro igualarmos a um, como no trecho de código seguinte:
+
+// Trecho de código suprimido
+
+enum Mes: Int {
+    case janeiro = 1, fevereiro, marco, abril, maio, junho, julho, agosto, setembro, outubro, novembro, dezembro
+}
+
+var janeiro = Mes.janeiro
+print(janeiro.rawValue)
+var fevereiro: Mes = .fevereiroCOPIAR CÓDIGO
+Obtemos o seguinte retorno:
+
+O pagamento será efetuado por pix
+1
+
+O print(janeiro.rawValue) retorna um. Logo, esse valor 1 representa o mês de janeiro na nossa enumeração.
+
+Se, após a criação da variável de fevereiro, exibirmos no console o Raw Value de fevereiro, obtemos no console o número dois.
+
+// Trecho de código suprimido
+
+enum Mes: Int {
+    case janeiro = 1, fevereiro, marco, abril, maio, junho, julho, agosto, setembro, outubro, novembro, dezembro
+}
+
+var janeiro = Mes.janeiro
+print(janeiro.rawValue)
+var fevereiro: Mes = .fevereiro
+print(fevereiro.rawValue)COPIAR CÓDIGO
+O pagamento será efetuado por pix
+1
+
+2
+
+Isso acontece porque ele captura a sequência para analisar qual o próximo número. Essa é uma forma de termos valores customizados para cada caso da nossa enumeração.
+
+Agora, ao invés de "Int" no nosso enum Mes, usaremos String. Logo após, vamos remover o "= 1" no mês de janeiro.
+
+// Trecho de código suprimido
+
+enum Mes: String {
+    case janeiro, fevereiro, marco, abril, maio, junho, julho, agosto, setembro, outubro, novembro, dezembro
+}
+
+var janeiro = Mes.janeiro
+print(janeiro.rawValue)
+var fevereiro: Mes = .fevereiro
+print(fevereiro.rawValue)COPIAR CÓDIGO
+Ao executarmos esse código, obtemos:
+
+O pagamento será efetuado por pix
+janeiro
+
+fevereiro
+
+Observe que o janeiro.rawValue retornou simplesmente "janeiro"; e o fevereiro.rawValue devolveu "fevereiro". Isso aconteceu porque ao definirmos o Raw Value como string ele captura a string literal do caso.
+
+Logo, se o caso é chamado de "janeiro" a string também será "janeiro". Porém, agora esse Raw Value não possui mais o tipo de dado Mes, mas sim string.
+
+Recapitulando: o Raw Value é o valor customizado para cada caso da enumeração.
+
+Exemplificando melhor o caso do string no Raw Value, após o case janeiro adicionaremos "= "Janeiro"", com a letra "J" maiúscula.
+
+// Trecho de código suprimido
+
+enum Mes: String {
+    case janeiro = "Janeiro", fevereiro, marco, abril, maio, junho, julho, agosto, setembro, outubro, novembro, dezembro
+}
+
+// Trecho de código suprimidoCOPIAR CÓDIGO
+Ao executarmos, obtemos:
+
+O pagamento será efetuado por pix
+Janeiro
+
+fevereiro
+
+Deu certo!
+
+Para continuar exemplificando sobre o Raw Value, criaremos outro enum abaixo do print do Raw Value de fevereiro, que também não está tão relacionado ao tema conta corrente. Chamaremos esse enum de Moeda.
+
+// Trecho de código suprimido
+
+enum Mes: String {
+    case janeiro, fevereiro, marco, abril, maio, junho, julho, agosto, setembro, outubro, novembro, dezembro
+}
+
+var janeiro = Mes.janeiro
+print(janeiro.rawValue)
+var fevereiro: Mes = .fevereiro
+print(fevereiro.rawValue)
+
+enum Moeda {
+
+}COPIAR CÓDIGO
+No escopo do enum, criaremos casos para diferentes valores de moedas.
+
+// Trecho de código suprimido
+
+enum Mes: String {
+    case janeiro, fevereiro, marco, abril, maio, junho, julho, agosto, setembro, outubro, novembro, dezembro
+}
+
+var janeiro = Mes.janeiro
+print(janeiro.rawValue)
+var fevereiro: Mes = .fevereiro
+print(fevereiro.rawValue)
+
+enum Moeda {
+
+        case umCentavo
+        case cincoCentavos
+        case dezCentavos
+        case vinteCincoCentavos
+        case cinquentaCentavos
+
+}COPIAR CÓDIGO
+Após o fechamentos de chaves do enum Moeda, criamos uma variável chamada de moedaCincoCentavos e igualaremos isso ao tipo de dado Moeda.CincoCentavos.
+
+// Trecho de código suprimido
+
+enum Mes: String {
+    case janeiro, fevereiro, marco, abril, maio, junho, julho, agosto, setembro, outubro, novembro, dezembro
+}
+
+var janeiro = Mes.janeiro
+print(janeiro.rawValue)
+var fevereiro: Mes = .fevereiro
+print(fevereiro.rawValue)
+
+enum Moeda {
+
+        case umCentavo
+        case cincoCentavos
+        case dezCentavos
+        case vinteCincoCentavos
+        case cinquentaCentavos
+
+}
+
+var moedaCincoCentavos = Moeda.cincoCentavosCOPIAR CÓDIGO
+Ao definirmos o Raw Value como double, podemos colocar o sinal de igual após cada caso passando o valor decimal que representa a moeda.
+
+// Trecho de código suprimido
+
+enum Mes: String {
+    case janeiro, fevereiro, marco, abril, maio, junho, julho, agosto, setembro, outubro, novembro, dezembro
+}
+
+var janeiro = Mes.janeiro
+print(janeiro.rawValue)
+var fevereiro: Mes = .fevereiro
+print(fevereiro.rawValue)
+
+enum Moeda: Double {
+
+        case umCentavo = 0.01
+        case cincoCentavos = 0.05
+        case dezCentavos = 0.1
+        case vinteCincoCentavos = 0.25
+        case cinquentaCentavos = 0.5
+
+}
+
+var moedaCincoCentavos = Moeda.cincoCentavosCOPIAR CÓDIGO
+Abaixo da variável moedaCincoCentavos, exibiremos no console a moeda de cinco centavos com o Raw Value, obtemos o valor 0.05 no console.
+
+// Trecho de código suprimido
+
+enum Mes: String {
+    case janeiro, fevereiro, marco, abril, maio, junho, julho, agosto, setembro, outubro, novembro, dezembro
+}
+
+var janeiro = Mes.janeiro
+print(janeiro.rawValue)
+var fevereiro: Mes = .fevereiro
+print(fevereiro.rawValue)
+
+enum Moeda: Double {
+
+        case umCentavo = 0.01
+        case cincoCentavos = 0.05
+        case dezCentavos = 0.1
+        case vinteCincoCentavos = 0.25
+        case cinquentaCentavos = 0.5
+
+}
+
+var moedaCincoCentavos = Moeda.cincoCentavos
+print(moedaCincoCentavos.rawValue)COPIAR CÓDIGO
+Console
+O pagamento será efetuado por pix
+Janeiro
+
+fevereiro
+
+0.05
+
+Associated Values
+Agora, precisamos entender sobre outra caraterística do enum nomeada de Associated Values (em português, "valores associados").
+
+Vamos supor a seguinte situação: você vai no banco e tenta sacar um valor maior do que o que consta no saldo da sua conta. Isso não seria possível, não é mesmo?
+
+Assim, podemos criar um enum para lidar com esses casos de sucesso e de falha.
+
+Voltando ao arquivo, após exibirmos o Raw Value da moeda de cinco centavos, criaremos um enum chamado de ResultadoSaque.
+
+// Trecho de código suprimido
+
+var moedaCincoCentavos = Moeda.cincoCentavos
+print(moedaCincoCentavos.rawValue)
+
+enum ResultadoSaque {
+
+}COPIAR CÓDIGO
+No escopo do enum, adicionaremos dois casos, sendo o primeiro de sucesso. Quando este caso ocorrer, precisamos atualizar o nosso saldo.
+
+Então escrevemos "case sucesso()" passando um valor chamado de novoValor que será do tipo double.
+
+// Trecho de código suprimido
+
+var moedaCincoCentavos = Moeda.cincoCentavos
+print(moedaCincoCentavos.rawValue)
+
+enum ResultadoSaque {
+        case sucesso(novoValor: Double)
+}COPIAR CÓDIGO
+Caso o saque não seja efetuado, ou seja, caso o valor que estamos tentando sacar seja maior que o que temos no saldo da nossa conta, vai cair em uma falha.
+
+Logo, na próxima linha, adicionaremos um caso de falha, onde teremos uma mensagem de erro especificando o motivo das falhas. Digitamos "erro: String" dentro do parênteses do caso de falha.
+
+// Trecho de código suprimido
+
+var moedaCincoCentavos = Moeda.cincoCentavos
+print(moedaCincoCentavos.rawValue)
+
+enum ResultadoSaque {
+        case sucesso(novoValor: Double)
+        case falha(erro: String)
+}COPIAR CÓDIGO
+Subindo o código na função sacar, vamos fazer essa função retornar o ResultadoSaque.
+
+// Trecho de código suprimido
+
+    func sacar(_ valor: Double) -> 
+                ResultadoSaque {
+
+
+
+        saldo -= valor
+    }
+
+// Trecho de código suprimidoCOPIAR CÓDIGO
+Agora, precisamos fazer uma verificação dentro do escopo da função, para isso, usaremos o comando if passando que se o valor for maior que o saldo, isso gera uma falha.
+
+Por isso, retornaremos usando o return e na sequência colocamos um ponto ("."), observe que ele irá exibir as opções de falha e de sucesso, clicaremos na opção "falha(erro:)".
+
+// Trecho de código suprimido
+
+    func sacar(_ valor: Double) -> 
+                ResultadoSaque {
+
+                if valor > saldo {
+                        return .falha(erro: String)
+                }
+
+        saldo -= valor
+    }
+
+// Trecho de código suprimidoCOPIAR CÓDIGO
+No lugar de "String" colocamos a mensagem "O valor é maior do que seu saldo".
+
+// Trecho de código suprimido
+
+    func sacar(_ valor: Double) -> 
+                ResultadoSaque {
+
+                if valor > saldo {
+                        return .falha(erro: "O valor é maior do que seu saldo")
+                }
+
+        saldo -= valor
+    }
+
+// Trecho de código suprimidoCOPIAR CÓDIGO
+Caso consiga efetuar o saque (else), dentro do else colocamos saldo -= valor, na linha seguinte retornamos o sucesso passando que o novo valor é o saldo, dado que este já está atualizado.
+
+// Trecho de código suprimido
+
+    func sacar(_ valor: Double) -> 
+                ResultadoSaque {
+
+                if valor > saldo {
+                        return .falha(erro: "O valor é maior do que seu saldo")
+                } else {
+                        saldo -= valor
+                        return .sucesso(novoValor: saldo)
+                }
+    }
+
+// Trecho de código suprimidoCOPIAR CÓDIGO
+Após essas alterações, executamos o código e não teremos nenhuma alteração no retorno.
+
+Agora, após chamarmos a função pagamentoCartao, vamos depositar um valor de R$100 e na próxima linha vamos sacar R$20.
+
+// Trecho de código suprimido
+
+var contaGiovanna: Conta = .init(nome: "Giovanna")
+contaGiovanna.pagamentoCartao(.pix)
+contaGiovanna.depositar(100)
+contaGiovanna.sacar(20)
+
+// Trecho de código suprimidoCOPIAR CÓDIGO
+Podemos executar que não ocorrerá nada de diferente, pois estamos apenas retornando dessa função.
+
+Mas observe que interessante: à direita da linha 42 (sacar) conseguimos visualizar que o retorno foi:
+
+sucesso(novoValor:80.0)
+Legal!
+
+Ainda na linha 42, armazenaremos esse ResultadoSaque (retorno da função sacar) em uma constante chamada de resultado.
+
+// Trecho de código suprimido
+
+var contaGiovanna: Conta = .init(nome: "Giovanna")
+contaGiovanna.pagamentoCartao(.pix)
+contaGiovanna.depositar(100)
+let resultado = contaGiovanna.sacar(20)
+
+// Trecho de código suprimidoCOPIAR CÓDIGO
+Com a constante resultado definida, vamos colocá-la dentro do comando switch. Lembrando que o comando switch é bastante usado com o enum para conseguirmos lidar com cada caso.
+
+// Trecho de código suprimido
+
+var contaGiovanna: Conta = .init(nome: "Giovanna")
+contaGiovanna.pagamentoCartao(.pix)
+contaGiovanna.depositar(100)
+let resultado = contaGiovanna.sacar(20)
+
+switch resultado {
+
+}
+
+// Trecho de código suprimidoCOPIAR CÓDIGO
+Se executarmos o código como ele está, será gerado um erro informando que o comando switch deve ser exaustivo, ou seja, precisamos adicionar todos os casos nele.
+
+Clicaremos no botão "Fix" no canto inferior direito da janela que abriu com a mensagem de erro.
+
+// Trecho de código suprimido
+
+var contaGiovanna: Conta = .init(nome: "Giovanna")
+contaGiovanna.pagamentoCartao(.pix)
+contaGiovanna.depositar(100)
+let resultado = contaGiovanna.sacar(20)
+
+switch resultado {
+
+case .sucesso(novoValor: let novoValor):
+
+case .falha(erro: let erro):
+
+}
+
+// Trecho de código suprimidoCOPIAR CÓDIGO
+Gerou um erro dentro dos parênteses, podemos apenas remover o "novoValor:" dentro do caso de sucesso e o "erro:" do caso de falha.
+
+// Trecho de código suprimido
+
+var contaGiovanna: Conta = .init(nome: "Giovanna")
+contaGiovanna.pagamentoCartao(.pix)
+contaGiovanna.depositar(100)
+let resultado = contaGiovanna.sacar(20)
+
+switch resultado {
+
+case .sucesso(let novoValor):
+
+case .falha(let erro):
+
+}
+
+// Trecho de código suprimidoCOPIAR CÓDIGO
+Então, o Associated Value nos permite associar um valor a cada caso.
+
+Vamos descer o código até o ResultadoSaque.
+
+// Trecho de código suprimido
+
+enum ResultadoSaque {
+        case sucesso(novoValor: Double)
+        case falha(erro: String)
+}COPIAR CÓDIGO
+Lembrando que em ResultadoSaque temos para o caso de sucesso um novo valor do tipo double; já para o caso de falha temos um erro do tipo string.
+
+Voltando ao switch, podemos declarar a variável novoValor como o valor que ele está recebendo caso o retorno for de sucesso. Para isso, abaixo do caso de sucesso vamos exibir a mensagem "O saque foi um sucesso, e o saldo é de (novoValor)", sendo \(novoValor) a interpolação para pegar esse novo valor.
+
+// Trecho de código suprimido
+
+switch resultado {
+
+case .sucesso(let novoValor):
+        print("O saque foi um sucesso, e o saldo é de \()")
+
+case .falha(let erro):
+
+}
+
+// Trecho de código suprimidoCOPIAR CÓDIGO
+No caso de falha, colocaremos "erro" dado que ele já é uma mensagem (string).
+
+// Trecho de código suprimido
+
+switch resultado {
+case .sucesso(let novoValor):
+        print("O saque foi um sucesso, e o saldo é de \()")
+
+case .falha(let erro):
+        print(erro)
+}
+
+// Trecho de código suprimidoCOPIAR CÓDIGO
+Agora, vamos copiar o enum ResultadoSaque inteiro e colar na linha 7, acima da classe Conta. Afinal, estamos usando o ResultadoSaque dentro de conta. E se ele estiver no fim do código, a classe Conta não consegue ler.
+
+// Trecho de código suprimido
+
+enum ResultadoSaque {
+        case sucesso(novoValor: Double)
+        case falha(erro: String)
+}
+
+class Conta {
+    var saldo = 0.0
+    var nome: String
+
+// Trecho de código suprimido
+
+}COPIAR CÓDIGO
+Ao executarmos o código na linha 54, clicando no botão "▶", temos o seguinte retorno no console:
+
+O pagamento será efetuado por pix
+O saque foi um sucesso, e o saldo é de 80.0
+
+Foi exibida uma mensagem informando o novo saldo!
+
+Nesta aula, aprendemos sobre o uso de Raw Values e Associated Values. Te espero no próximo vídeo!
+
+@@08
+Desafios
+
+Agora que você já entendeu sobre os diferentes tipos como protocolos, extensões e enumerações, está na hora de praticarmos com desafios.
+Desafio 01 - Área
+Crie um protocolo chamado “Area” que define uma propriedade que pode apenas ser lida, e não setada, que corresponde a área de determinada figura, com o tipo Double. Essa propriedade é definida como uma propriedade computada, mas lembre-se que no protocolo não há diferenciação entre propriedades armazenadas ou computadas, você apenas define uma propriedade.
+
+E então, crie duas classes (ou structs) que implementem o protocolo Area: Quadrado e Triangulo. Implemente o cálculo da área de acordo com cada figura (cada classe precisa receber os parâmetros necessários para o cálculo) e por fim, imprima o valor de cada área no console.
+
+Desafio 02 - Moedas
+Veja o código abaixo:
+
+enum Moeda: Int {
+  case UmCentavo = 1
+  case CincoCentavos = 5
+  case DezCentavos = 10
+  case VinteCincoCentavos = 25
+  case CinquentaCentavos = 50
+}
+
+let moedas: [Moeda] = [.CincoCentavos, .UmCentavo, .CincoCentavos, .VinteCincoCentavos, .CincoCentavos, .DezCentavos]COPIAR CÓDIGO
+De acordo com esse código, crie uma função que recebe como parâmetro um array do tipo “Moeda”. Faça a soma de todos os valores desse array segundo o raw value e retorne essa soma.
+
+No caso do exemplo acima, o que deve ser retornado da função é o valor 51, que é a soma de todas as moedas desse array declarado.
+
+Vamos lá?
+
+Opinião do instrutor
+
+No exercício 1, você pode ter desenvolvido algo como:
+protocol Area {
+  var area: Double { get }
+}
+
+struct Quadrado: Area {
+  var lado: Double
+  var area: Double {
+    return lado * lado
+  }
+}
+
+struct Triangulo: Area {
+  var base: Double
+  var altura: Double
+  var area: Double {
+    return (base * altura) / 2
+  }
+}
+
+let quadrado = Quadrado(lado: 7)
+let triangulo = Triangulo(base: 4, altura: 3)
+quadrado.area
+triangulo.areaCOPIAR CÓDIGO
+Enquanto no exercício 2, eu cheguei nessa conclusão:
+
+enum Moeda: Int {
+  case UmCentavo = 1
+  case CincoCentavos = 5
+  case DezCentavos = 10
+  case VinteCincoCentavos = 25
+  case CinquentaCentavos = 50
+}
+
+func contarMoedas(_ moedas: [Moeda]) -> Int {
+  var soma = 0
+  for valor in moedas {
+    soma += valor.rawValue
+  }
+  return soma
+}
+
+let moedas: [Moeda] = [.CincoCentavos, .UmCentavo, .CincoCentavos, .VinteCincoCentavos, .CincoCentavos, .DezCentavos]
+contarMoedas(moedas) // 51COPIAR CÓDIGO
+Uma curiosidade sobre o exercício 2 é que o método poderia ser implementado dentro da enumeração “Moeda”, veja abaixo como seria:
+
+enum Moeda: Int {
+  case UmCentavo = 1
+  case CincoCentavos = 5
+  case DezCentavos = 10
+  case VinteCincoCentavos = 25
+  case CinquentaCentavos = 50
+
+  static func contarMoedas(_ moedas: [Self]) -> Int {
+    var soma = 0
+    for valor in moedas {
+      soma += valor.rawValue
+    }
+    return soma
+  }
+}
+
+let moedas: [Moeda] = [.CincoCentavos, .UmCentavo, .CincoCentavos, .VinteCincoCentavos, .CincoCentavos, .DezCentavos]
+Moeda.contarMoedas(moedas)COPIAR CÓDIGO
+Precisa ser método estático pois depende da enumeração em si e não de uma instância da enumeração.
+
+Lembrando que Self, com S maiúsculo, refere-se ao tipo de dado da própria classe/struct/enumeração/protocolo (ou qualquer outro tipo de dado). Já self, com S minúsculo, refere-se ao valor da instância.
+
+Observação: não se preocupe se seu código ficou muito diferente do meu, existem diversas maneiras de chegar em um mesmo resultado. Apenas certifique-se de que você está escrevendo um código legível, com nomes bem definidos, etc.
+
+@@09
+Para saber mais: opcionais funcionam com o uso de enumerações
+
+Agora que você já entendeu sobre enumerações, sabia que as opcionais funcionam com o uso de enumerações?
+Isso acontece porque quando utilizamos opcionais temos dois cenários possíveis:
+
+Caso haja algum valor;
+Caso não haja algum valor (nesse caso, a opcional será nil).
+Quem controla esses casos são as enumerações. Veja o código abaixo:
+
+var valor: Int?
+valor = 5
+
+switch valor {
+case .none: print("A opcional não possui nenhum valor.")
+case .some(let valor): print("O valor da opcional é \(valor)")
+}COPIAR CÓDIGO
+Portanto, é utilizado de enumeração e valores associados para lidar com opcionais. Interessante, não?
+
+@@10
+Para saber mais: Generics
+
+Pelo Swift ser fortemente tipado, existem alguns casos em que queremos utilizar tipos mais “genéricos”. É aí que entra a poderosa funcionalidade da linguagem Swift: Generics.
+Para entender sobre essa funcionalidade, temos um artigo aqui na Alura e você pode lê-lo aqui.
+
+Além disso, é extremamente importante lermos a documentação da linguagem/tecnologia que estamos utilizando, por isso você pode clicar aqui para ler mais sobre Generics através da documentação do Swift.
+
+https://www.alura.com.br/artigos/ios-swift-entendendo-uso-generics-por-que-como-utilizar?_gl=1*1dv3wd9*_ga*MTgwMzIzMjk2Ni4xNjg4ODE5OTcz*_ga_59FP0KYKSM*MTY4OTUzNjAxNS4xNi4xLjE2ODk1NDA0MjMuMC4wLjA.*_fplc*Z0FzYnVRTloxa2h4YmRwTWNTSHVtQjFlV1N4dEtiWk8wRDBMUHh0Z2w3Q0lOS2JZQk1JZXRhJTJGdUsxeklSSGlRUHZyNDd4SFVnRm51VEx6eXRhMiUyRkZZc2lnMXZhSXBQODNmMEptJTJGZ01VYTBtVzF4dnJqRTVOOUpaZ0lSMXpnJTNEJTNE
+
+https://docs.swift.org/swift-book/documentation/the-swift-programming-language/generics/
+
+@@11
+O que aprendemos?
+PRÓXIMA ATIVIDADE
+
+Nessa aula, você aprendeu como:
+Utilizar de extensões para extender tipos de dados já existentes ou criados;
+Criar protocolos e utilizá-los para definir regras que devem ser seguidas pelos tipos de dados que irá definir;
+Definir diferentes casos pela enumeração;
+Trabalhar com raw values e associated values em enumerações.
+
+@@12
+Conclusão
+
+Parabéns por concluir mais um curso! Agora você compreende mais como a linguagem Swift funciona.
+Recapitulando
+Nesse curso, vimos tópicos sobre orientação a objetos, como as classes, as structs, as heranças e o polimorfismo.
+
+Também, aprendemos sobre propriedades, sendo elas as armazenadas, as computadas e as estáticas e os observadores de propriedades também!
+
+Por fim, aprendemos sobre tipos de dados muito usados na linguagem Swift, como as extensões, os protocolos e as enumerações.
+
+Orientação a objetos
+Classes
+Structs
+Heranças
+Polimorfismo
+Propriedades
+Propriedades armazenadas
+Propriedades computadas
+Propriedades estáticas
+Observadores
+Tipos de dados
+Extensões
+Protocolos
+Enumerações
+Com esse conhecimento, você já possui os requisitos necessários para iniciar a construção do seu primeiro aplicativo iOS.
+
+Use o Fórum e o Discord! Caso tenha qualquer dúvida, pode postar no nosso Fórum ou no Discord da Alura, que estamos à disposição!
+
+Você também pode conhecer outras pessoas estudantes que estão realizando este curso ou que já fizeram e trocar conhecimentos sobre o desenvolvimento iOS.
+
+Avalie o curso! A sua avaliação é muito importante para nós, deixe a sua nota e o seu comentário com a sua sugestão de melhoria ou elogio.
+
+Nos marque nas redes sociais! Poste o seu projeto e tudo o que aprendeu ao longo dos nossos cursos aqui na plataforma da Alura, usando a hashtag #AprendiNaAlura.
+
+Muito obrigada por me acompanhar ao longo desse curso e por ter chegado até aqui. Até mais!
